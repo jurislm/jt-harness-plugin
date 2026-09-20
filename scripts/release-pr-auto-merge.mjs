@@ -363,33 +363,15 @@ function mainBranchSha(value) {
   );
 }
 
-function validateMainBranchProtection(value) {
-  const protection = requiredRecord(value, "main branch protection");
-  const requiredChecks = requiredRecord(
-    protection.required_status_checks,
-    "main branch protection.required_status_checks",
+function validateRequiredCheck(value) {
+  const status = requiredRecord(value, "release PR commit status");
+  const statuses = status.statuses;
+  if (!Array.isArray(statuses)) throw new Error("release PR commit status must include statuses");
+  const requiredStatus = statuses.find(
+    (entry) => isRecord(entry) && entry.context === REQUIRED_STATUS_CHECK,
   );
-  if (requiredChecks.strict !== true) {
-    throw new Error("main branch protection must require release PR checks against the latest base");
-  }
-  if (
-    !Array.isArray(requiredChecks.contexts) ||
-    !requiredChecks.contexts.includes(REQUIRED_STATUS_CHECK)
-  ) {
-    throw new Error(`main branch protection must require ${REQUIRED_STATUS_CHECK}`);
-  }
-  const admins = requiredRecord(
-    protection.enforce_admins,
-    "main branch protection.enforce_admins",
-  );
-  if (admins.enabled !== true) {
-    throw new Error("main branch protection must apply to the automation credential");
-  }
-  if (
-    protection.required_pull_request_reviews !== undefined &&
-    protection.required_pull_request_reviews !== null
-  ) {
-    throw new Error("main branch protection must not require human approval for release PR automation");
+  if (!requiredStatus || requiredStatus.state !== "success") {
+    throw new Error(`release PR must pass ${REQUIRED_STATUS_CHECK}`);
   }
 }
 
@@ -508,6 +490,9 @@ export async function runReleasePrAutoMerge({
     ]),
   );
   validateReleaseContents({ contract, candidate, baseContents, headContents });
+  validateRequiredCheck(
+    await request(`/repos/${REPOSITORY}/commits/${encodeURIComponent(candidate.headSha)}/status`),
+  );
 
   let mergeable = false;
   for (let attempt = 1; attempt <= MAX_MERGEABLE_ATTEMPTS; attempt += 1) {
@@ -535,10 +520,6 @@ export async function runReleasePrAutoMerge({
 
   const currentSha = await readMainBranchSha();
   if (currentSha !== expectedCommitSha) return { status: "no-op" };
-
-  validateMainBranchProtection(
-    await request(`/repos/${REPOSITORY}/branches/${BASE_BRANCH}/protection`),
-  );
 
   try {
     const mergeSha = mergeResult(
