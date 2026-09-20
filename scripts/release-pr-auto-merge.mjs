@@ -13,7 +13,7 @@ const RELEASE_BODY_FOOTER =
   "This PR was generated with [Release Please](https://github.com/googleapis/release-please).";
 const RELEASE_TITLE = /^chore\(main\): release ((?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*))$/u;
 const GITHUB_API = "https://api.github.com";
-const REQUIRED_STATUS_CHECK = "ci/woodpecker/pr/ci";
+const REQUIRED_STATUS_CHECKS = ["ci/woodpecker/push/ci", "ci/woodpecker/pr/ci"];
 const MAX_MERGEABLE_ATTEMPTS = 180;
 const MERGEABLE_POLL_DELAY_MS = 5_000;
 const REQUEST_TIMEOUT_MS = 30_000;
@@ -363,15 +363,17 @@ function mainBranchSha(value) {
   );
 }
 
-function validateRequiredCheck(value) {
+function validateRequiredChecks(value) {
   const status = requiredRecord(value, "release PR commit status");
   const statuses = status.statuses;
   if (!Array.isArray(statuses)) throw new Error("release PR commit status must include statuses");
-  const requiredStatus = statuses.find(
-    (entry) => isRecord(entry) && entry.context === REQUIRED_STATUS_CHECK,
-  );
-  if (!requiredStatus || requiredStatus.state !== "success") {
-    throw new Error(`release PR must pass ${REQUIRED_STATUS_CHECK}`);
+  for (const context of REQUIRED_STATUS_CHECKS) {
+    const requiredStatus = statuses.find(
+      (entry) => isRecord(entry) && entry.context === context,
+    );
+    if (!requiredStatus || requiredStatus.state !== "success") {
+      throw new Error(`release PR must pass ${context}`);
+    }
   }
 }
 
@@ -381,24 +383,24 @@ async function waitForRequiredCheck(request, commitSha, sleep) {
       `/repos/${REPOSITORY}/commits/${encodeURIComponent(commitSha)}/status`,
     );
     try {
-      validateRequiredCheck(value);
+      validateRequiredChecks(value);
       return;
     } catch (error) {
       const status = requiredRecord(value, "release PR commit status");
       const statuses = Array.isArray(status.statuses) ? status.statuses : [];
-      const requiredStatus = statuses.find(
-        (entry) => isRecord(entry) && entry.context === REQUIRED_STATUS_CHECK,
-      );
-      if (
-        requiredStatus &&
-        !["pending", "queued", "in_progress"].includes(requiredStatus.state)
-      ) {
+      const terminalFailure = REQUIRED_STATUS_CHECKS.some((context) => {
+        const requiredStatus = statuses.find(
+          (entry) => isRecord(entry) && entry.context === context,
+        );
+        return requiredStatus && ["failure", "error", "cancelled"].includes(requiredStatus.state);
+      });
+      if (terminalFailure) {
         throw error;
       }
     }
     if (attempt < MAX_MERGEABLE_ATTEMPTS) await sleep(MERGEABLE_POLL_DELAY_MS);
   }
-  throw new Error(`release PR check timed out: ${REQUIRED_STATUS_CHECK}`);
+  throw new Error(`release PR checks timed out: ${REQUIRED_STATUS_CHECKS.join(", ")}`);
 }
 
 function mergeabilityDecision(value) {
