@@ -4,6 +4,7 @@ import test from "node:test";
 
 const repositoryRoot = new URL("../", import.meta.url);
 const skillsDir = new URL("skills/", repositoryRoot);
+const RETIRED_SINGLE_SKILL = ["jt", "-flow", "-one"].join("");
 
 export const PUBLIC_SKILLS = ["engineering-delivery", "using-jt-workflow"];
 export const INTERNAL_SKILLS = [
@@ -38,7 +39,7 @@ export function frontmatterDescription(source) {
   return match[1].replace(/\s+/g, " ").trim();
 }
 
-test("JT Harness 只提供六個 Skill，且 jt-flow-one 已退場", () => {
+test("JT Harness 只提供六個 Skill，且退役的單一流程 Skill 已退場", () => {
   const actual = readdirSync(skillsDir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
@@ -211,7 +212,7 @@ test("acceptance-readback 涵蓋無部署管道的 repo", () => {
   assert.match(source, /superpowers:verification-before-completion/);
 });
 
-test("live 檔案不再引用 jt-flow-one", () => {
+test("live 檔案不再引用退役的單一流程 Skill", () => {
   const EXCLUDED_DIRS = new Set([
     ".git",
     "node_modules",
@@ -222,7 +223,7 @@ test("live 檔案不再引用 jt-flow-one", () => {
   ]);
   const EXCLUDED_FILES = new Set([
     "CHANGELOG.md",
-    // 本測試檔必須指名退場的 Skill 才能斷言它不存在
+    // 本測試檔必須動態組出退場名稱才能斷言它不存在
     "scripts/jt-harness-skills-policy.test.mjs",
   ]);
 
@@ -239,12 +240,12 @@ test("live 檔案不再引用 jt-flow-one", () => {
       if (EXCLUDED_FILES.has(relativePath)) continue;
       if (!/\.(md|json|yaml|yml|mjs|js)$/.test(entry.name)) continue;
       const source = readFileSync(new URL(relativePath, repositoryRoot), "utf8");
-      if (source.includes("jt-flow-one")) offenders.push(relativePath);
+      if (source.includes(RETIRED_SINGLE_SKILL)) offenders.push(relativePath);
     }
   };
   walk("");
 
-  assert.deepEqual(offenders, [], `這些 live 檔案仍引用退場的 jt-flow-one：${offenders.join(", ")}`);
+  assert.deepEqual(offenders, [], `這些 live 檔案仍引用退役單一流程 Skill：${offenders.join(", ")}`);
 });
 
 test("六個 Skill 都不使用需要拿捏的措辭", () => {
