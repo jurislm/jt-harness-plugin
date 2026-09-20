@@ -1,0 +1,40 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "jt-harness-plugin",
+  "version": "1.44.0",
+  "description": "JurisLM's Linear-driven delivery workflow for end-to-end engineering execution.",
+  "author": {
+    "name": "Terry Chen",
+    "url": "https://github.com/jurislm"
+  },
+  "homepage": "https://github.com/jurislm/jt-harness-plugin",
+  "repository": "https://github.com/jurislm/jt-harness-plugin",
+  "license": "UNLICENSED",
+  "keywords": [
+    "workflow",
+    "linear",
+    "github-flow",
+    "tdd",
+    "code-review",
+    "delivery"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "JT Harness Plugin",
+        "shortDescription": "Deliver Linear issues end to end.",
+        "longDescription": "Use the JT Harness workflow to clarify, implement, review, merge, validate, and record a Linear issue.",
+        "developerName": "JurisLM",
+        "category": "Developer tools",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "defaultPrompt": [
+          "Use JT Harness to deliver this Linear issue end to end."
+        ],
+        "websiteURL": "https://github.com/jurislm/jt-harness-plugin"
+      }
+    }
+  }
+}

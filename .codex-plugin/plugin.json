@@ -1,0 +1,25 @@
+{
+  "name": "jt-harness-plugin",
+  "version": "1.44.0",
+  "description": "Codex compatibility metadata for the JT Harness delivery workflow.",
+  "author": {
+    "name": "Terry Chen",
+    "url": "https://github.com/jurislm"
+  },
+  "repository": "https://github.com/jurislm/jt-harness-plugin",
+  "license": "UNLICENSED",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "JT Harness Plugin",
+    "shortDescription": "Deliver Linear issues end to end.",
+    "longDescription": "Use the JT Harness workflow to clarify, implement, review, merge, validate, and record a Linear issue.",
+    "developerName": "JurisLM",
+    "category": "Developer tools",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": "Use JT Harness to deliver this Linear issue end to end.",
+    "websiteURL": "https://github.com/jurislm/jt-harness-plugin"
+  }
+}

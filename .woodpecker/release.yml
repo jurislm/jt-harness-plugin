@@ -1,0 +1,22 @@
+labels:
+  platform: linux/amd64
+when:
+  - event: push
+    branch: main
+steps:
+  - name: github-release
+    image: node:22.22.2-bookworm-slim
+    environment:
+      GITHUB_API_TOKEN:
+        from_secret: personal_access_tokens_fine_grained_tokens_jurislm
+    commands:
+      - npx --yes release-please@17.10.4 github-release --token=$GITHUB_API_TOKEN --repo-url=https://github.com/jurislm/jt-harness-plugin --target-branch=main --config-file=release-please-config.json --manifest-file=.release-please-manifest.json
+  - name: release-pr
+    image: node:22.22.2-bookworm-slim
+    depends_on:
+      - github-release
+    environment:
+      GITHUB_API_TOKEN:
+        from_secret: personal_access_tokens_fine_grained_tokens_jurislm
+    commands:
+      - npx --yes release-please@17.10.4 release-pr --token=$GITHUB_API_TOKEN --repo-url=https://github.com/jurislm/jt-harness-plugin --target-branch=main --config-file=release-please-config.json --manifest-file=.release-please-manifest.json

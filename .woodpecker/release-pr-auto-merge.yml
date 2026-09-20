@@ -1,0 +1,13 @@
+labels:
+  platform: linux/amd64
+when:
+  - event: push
+    branch: main
+steps:
+  merge-release-pr:
+    image: node:22.22.2-bookworm-slim
+    environment:
+      GITHUB_API_TOKEN:
+        from_secret: personal_access_tokens_fine_grained_tokens_jurislm
+    commands:
+      - node scripts/release-pr-auto-merge.mjs
