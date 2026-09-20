@@ -375,6 +375,32 @@ function validateRequiredCheck(value) {
   }
 }
 
+async function waitForRequiredCheck(request, commitSha, sleep) {
+  for (let attempt = 1; attempt <= MAX_MERGEABLE_ATTEMPTS; attempt += 1) {
+    const value = await request(
+      `/repos/${REPOSITORY}/commits/${encodeURIComponent(commitSha)}/status`,
+    );
+    try {
+      validateRequiredCheck(value);
+      return;
+    } catch (error) {
+      const status = requiredRecord(value, "release PR commit status");
+      const statuses = Array.isArray(status.statuses) ? status.statuses : [];
+      const requiredStatus = statuses.find(
+        (entry) => isRecord(entry) && entry.context === REQUIRED_STATUS_CHECK,
+      );
+      if (
+        requiredStatus &&
+        !["pending", "queued", "in_progress"].includes(requiredStatus.state)
+      ) {
+        throw error;
+      }
+    }
+    if (attempt < MAX_MERGEABLE_ATTEMPTS) await sleep(MERGEABLE_POLL_DELAY_MS);
+  }
+  throw new Error(`release PR check timed out: ${REQUIRED_STATUS_CHECK}`);
+}
+
 function mergeabilityDecision(value) {
   const detail = requiredRecord(value, "mergeability pull request");
   const mergeable = detail.mergeable;
@@ -490,9 +516,7 @@ export async function runReleasePrAutoMerge({
     ]),
   );
   validateReleaseContents({ contract, candidate, baseContents, headContents });
-  validateRequiredCheck(
-    await request(`/repos/${REPOSITORY}/commits/${encodeURIComponent(candidate.headSha)}/status`),
-  );
+  await waitForRequiredCheck(request, candidate.headSha, sleep);
 
   let mergeable = false;
   for (let attempt = 1; attempt <= MAX_MERGEABLE_ATTEMPTS; attempt += 1) {
