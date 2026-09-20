@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "jt-harness-plugin",
-  "version": "1.44.0",
+  "version": "1.44.1",
   "description": "JurisLM's Linear-driven delivery workflow for end-to-end engineering execution.",
   "author": {
     "name": "Terry Chen",
