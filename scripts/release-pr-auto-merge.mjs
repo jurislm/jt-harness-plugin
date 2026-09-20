@@ -421,7 +421,7 @@ export async function runReleasePrAutoMerge({
   if (typeof token !== "string" || token.length === 0) {
     throw new Error("GITHUB_API_TOKEN is required");
   }
-  const expectedCommitSha = requiredSha(commitSha, "DRONE_COMMIT");
+  const expectedCommitSha = requiredSha(commitSha, "CI_COMMIT_SHA");
   if (typeof sleep !== "function") throw new Error("sleep must be a function");
   const timeoutMs = requiredPositiveInteger(requestTimeoutMs, "requestTimeoutMs");
 
@@ -467,7 +467,7 @@ export async function runReleasePrAutoMerge({
     if (await candidateBaseIsNewer(candidate.baseSha)) {
       return { status: "no-op" };
     }
-    throw new Error("release PR base SHA does not match the triggering Drone commit");
+    throw new Error("release PR base SHA does not match the triggering Woodpecker commit");
   }
 
   const changedFileCount = requiredRecord(detailValue, "pull request detail").changed_files;
@@ -564,7 +564,7 @@ export async function runReleasePrAutoMerge({
 async function main() {
   const result = await runReleasePrAutoMerge({
     token: process.env.GITHUB_API_TOKEN,
-    commitSha: process.env.DRONE_COMMIT,
+    commitSha: process.env.CI_COMMIT_SHA,
   });
   if (result.status === "merged") {
     console.log(`Merged release-please Release PR #${result.pullNumber}.`);

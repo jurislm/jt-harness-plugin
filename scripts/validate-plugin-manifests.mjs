@@ -20,9 +20,10 @@ for (const [schemaPath, documentPath] of [
 
 assert.equal(plugin.name, "jt-harness-plugin");
 assert.equal(fallback.name, plugin.name);
-assert.equal(plugin.version, "1.44.0");
+assert.match(packageJson.version, /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/);
+assert.notEqual(packageJson.version, "0.1.0");
+assert.equal(plugin.version, packageJson.version);
 assert.equal(fallback.version, plugin.version);
-assert.equal(packageJson.version, plugin.version);
 assert.equal(plugin.extensions["com.openai"].interface.displayName, "JT Harness Plugin");
 assert.deepEqual(plugin.extensions["com.openai"].interface.defaultPrompt, [
   "Use JT Harness to deliver this Linear issue end to end.",

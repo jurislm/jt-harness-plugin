@@ -1,8 +1,15 @@
 labels:
   platform: linux/amd64
+labels:
+  platform: linux/amd64
 when:
   - event: push
     branch: main
+depends_on:
+  - ci
+  - release
+concurrency:
+  limit: 1
 steps:
   merge-release-pr:
     image: node:22.22.2-bookworm-slim
