@@ -27,6 +27,8 @@ codex plugin add jt-harness-plugin@jurislm-jt-harness
 
 本 Plugin 不提供 MCP server、slash commands、OAuth 或 hosted endpoint。
 
+版本以 GitHub Release 發布；此 skills-only Plugin 不發布 npm package。
+
 ## 授權與依賴
 
 指向一個 Linear issue 並要求交付，即授權流程走到合併與驗收；真實歧義、重大風險、secret、缺少權限或不可逆 production mutation 才會暫停。
