@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.44.2](https://github.com/jurislm/jt-harness-plugin/compare/v1.44.1...v1.44.2) (2026-09-23)
+
+
+### 📚 Documentation
+
+* align PR review gate with review policy ([#8](https://github.com/jurislm/jt-harness-plugin/issues/8)) ([1183b06](https://github.com/jurislm/jt-harness-plugin/commit/1183b06313c831a4f187c85b373c105b0383d6fc))
+
 ## [1.44.1](https://github.com/jurislm/jt-harness-plugin/compare/v1.44.0...v1.44.1) (2026-09-20)
 
 

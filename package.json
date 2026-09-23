@@ -1,6 +1,6 @@
 {
   "name": "jt-harness-plugin",
-  "version": "1.44.1",
+  "version": "1.44.2",
   "private": true,
   "description": "JurisLM's Linear-driven delivery workflow for end-to-end engineering execution.",
   "license": "UNLICENSED",
