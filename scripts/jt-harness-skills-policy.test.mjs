@@ -355,12 +355,20 @@ test("findings 的 disposition 用 accepted 表達「已採納、修正在 N4」
   assert.match(gate, /`needsCodeChange: true` 時，回傳的 finding 是 `accepted`/);
 });
 
-test("external-review-gate 採信 review 前先驗證來源、PR 與 head SHA", () => {
+test("external-review-gate 遵守一次審查與雙管道退路", () => {
   const source = readSkill("external-review-gate");
+  const coordinator = readSkill("engineering-delivery");
 
   assert.match(source, /## 採信一份 review 之前/);
-  assert.match(source, /head SHA \*\*仍是目前的 HEAD\*\*/, "過期的 review 審的是別的程式碼");
-  assert.match(source, /不得映射為 `ok`/);
+  assert.match(source, /結果確實來自 `coderabbit:code-review`/);
+  assert.match(source, /結果對應的是\*\*本次這個 PR\*\*/);
+  assert.match(source, /PR\s*管道受限才.*嘗試 CLI/s);
+  assert.match(source, /兩個管道均確認受限時.*回 `ok`/s);
+  assert.match(source, /已取得 CodeRabbit 結果後不再要求第二次完整審查/);
+  assert.match(source, /N7 重跑只核對既有 findings、審查後的差異與目前驗證結果/);
+  assert.match(source, /head SHA.*目前 HEAD.*差異/s);
+  assert.match(source, /達重查上限仍在進行中 → 嘗試 CLI/);
+  assert.match(coordinator, /Codex 對本次 PR 只做一次完整審查/);
 });
 
 test("acceptance-readback 綁定合併 commit 並要求遮罩證據", () => {

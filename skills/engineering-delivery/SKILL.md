@@ -105,7 +105,8 @@ commit 成為預設分支的祖先（多數 repo 採 squash merge 時都是這�
 ### N5 本地審查
 
 `superpowers:requesting-code-review`，findings 依 `superpowers:receiving-code-review`
-逐項核實。**橫向把關**：改動觸及使用者資料、憑證、外部輸入、權限時必須納入資安審查；
+逐項核實。Codex 對本次 PR 只做一次完整審查；N4 修正後核對變更與 findings，不重啟完整審查。
+**橫向把關**：改動觸及使用者資料、憑證、外部輸入、權限時必須納入資安審查；
 觸及 schema、migration、查詢時必須納入資料審查。觸及而未納入，本節點不算完成。
 
 ### N6 開 PR
