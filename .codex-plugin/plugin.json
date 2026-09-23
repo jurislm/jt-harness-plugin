@@ -1,6 +1,6 @@
 {
   "name": "jt-harness-plugin",
-  "version": "1.44.1",
+  "version": "1.44.2",
   "description": "Codex compatibility metadata for the JT Harness delivery workflow.",
   "author": {
     "name": "Terry Chen",
