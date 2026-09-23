@@ -11,15 +11,21 @@ description: >
 
 ## 所有權邊界
 
-審查的**取得**由 `coderabbit:code-review` 擁有——授權、資料範圍、管道呼叫方式全歸它
-管。本 Skill **不重新實作查證與呼叫，也不描述任何管道呼叫細節**，只做兩件事：依目標
-repo 宣告決定本 PR 是否需要審查，以及把結果映射為終態。
+審查的**取得**由 `coderabbit:code-review` 擁有——授權、資料範圍與實際呼叫方式全歸它
+管。本 Skill 只決定本 PR 是否需要審查、PR 與 CLI 管道的退路，以及結果的終態。
 
-管道細節寫在這裡會有兩個後果：所有權重複，以及外部工具改版後這份文件靜默過期。
+管道指令與參數留在 `coderabbit:code-review`，避免外部工具改版後這份文件過期。
 
 ## 完成條件
 
 不是「拿到 review 內容」，而是「已到達可判定狀態」。
+
+## 一次審查與退路
+
+Codex 在 N5、CodeRabbit 在 N7 各做一次完整審查。CodeRabbit 優先用 PR 管道；PR
+管道受限才由 `coderabbit:code-review` 嘗試 CLI。兩個管道均確認受限時，記入各自限制並
+回 `ok`，以已完成的 Codex 審查為準。已取得 CodeRabbit 結果後不再要求第二次完整審查。
+N7 重跑只核對既有 findings、審查後的差異與目前驗證結果。
 
 ## 重查上限
 
@@ -29,15 +35,15 @@ repo 宣告決定本 PR 是否需要審查，以及把結果映射為終態。
 
 ## 採信一份 review 之前
 
-映射成終態之前先確認三件事，任一不成立即 `halted/access_config`，**不得映射為 `ok`，
-也不得 resolve 任何 review thread**：
+映射成終態之前先確認來源與範圍，任一不成立即 `halted/access_config`，**不得映射為
+`ok`，也不得 resolve 任何 review thread**：
 
 1. 結果確實來自 `coderabbit:code-review`，不是任意留言或他人貼上的內容
 2. 結果對應的是**本次這個 PR**
-3. 結果對應的 head SHA **仍是目前的 HEAD**——過期的 review 審的是別的程式碼
 
-第 3 點在 `auto_incremental_review: false` 的 repo 特別重要：push 之後不會再自動審，
-舊 review 會留在原地看起來像是有效的。
+記錄 CodeRabbit 審查的 head SHA。若目前 HEAD 不同，Codex 必須逐項核對從該 SHA 到
+目前 HEAD 的差異及 findings 處置，才可回 `ok`；無法核對則 `halted/access_config`。
+舊 review 只代表原 SHA，不能宣稱已審查目前 HEAD。
 
 ## 狀態矩陣
 
@@ -47,8 +53,8 @@ repo 宣告決定本 PR 是否需要審查，以及把結果映射為終態。
 | 已有 review，finding 皆不需改碼或零 finding | `ok` | `false` |
 | 目標 repo 宣告此類 PR 免審（標題命中忽略清單） | `not_applicable` | — |
 | 已受理但尚未完成（查得到審查已建立或進行中） | 續查；達重查上限仍在進行中 → `ok` 並記入 `notes` | `false` |
-| 服務端限制（額度耗盡、服務中斷、scope 過大） | `ok`，記入 `notes` | `false` |
-| 存取或設定問題（未安裝、未授權、未登入、權限不符） | `halted/access_config` | — |
+| PR 與 CLI 均確認受限（額度、服務、scope、授權或權限） | `ok`，記入兩個管道的限制 | `false` |
+| `coderabbit:code-review` 無法取得，或無法判定兩個管道的狀態 | `halted/access_config` | — |
 | 無任何受理跡象（查不到審查是否被接受） | `halted/access_config` | — |
 | 結果格式無法解析，或查詢本身失敗 | `halted/access_config`，`needed` 附實際錯誤 | — |
 
@@ -61,8 +67,8 @@ repo 宣告決定本 PR 是否需要審查，以及把結果映射為終態。
 
 ## 兩個管道結論不同時
 
-以較嚴格者為準：任一管道是存取或設定問題，即走 `halted`。**任一管道已確認是存取或
-設定問題時立即出場**，不再對另一管道等待或重試。
+任一管道取得有效 review，就處置該 review 的 findings；僅一個管道受限時走另一個。
+兩個都確認受限才依「一次審查與退路」回 `ok`；管道狀態無法確認時走 `halted/access_config`。
 
 ## findings 處置
 
