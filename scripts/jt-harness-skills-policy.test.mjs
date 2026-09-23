@@ -364,6 +364,7 @@ test("external-review-gate 遵守一次審查與雙管道退路", () => {
   assert.match(source, /兩個管道均確認受限時.*回 `ok`/s);
   assert.match(source, /一次完整審查/);
   assert.match(source, /head SHA.*目前 HEAD.*差異/s);
+  assert.match(source, /達重查上限仍在進行中 → 嘗試 CLI/);
   assert.match(coordinator, /Codex 對本次 PR 只做一次完整審查/);
 });
 

@@ -52,12 +52,13 @@ N7 重跑只核對既有 findings、審查後的差異與目前驗證結果。
 | 已有 review 且有需改碼的 finding | `ok`，附 `findings[]` | `true` |
 | 已有 review，finding 皆不需改碼或零 finding | `ok` | `false` |
 | 目標 repo 宣告此類 PR 免審（標題命中忽略清單） | `not_applicable` | — |
-| 已受理但尚未完成（查得到審查已建立或進行中） | 續查；達重查上限仍在進行中 → `ok` 並記入 `notes` | `false` |
+| PR 審查已受理但尚未完成 | 續查；達重查上限仍在進行中 → 嘗試 CLI | — |
 | PR 與 CLI 均確認受限（額度、服務、scope、授權或權限） | `ok`，記入兩個管道的限制 | `false` |
 | `coderabbit:code-review` 無法取得，或無法判定兩個管道的狀態 | `halted/access_config` | — |
 | 無任何受理跡象（查不到審查是否被接受） | `halted/access_config` | — |
 | 結果格式無法解析，或查詢本身失敗 | `halted/access_config`，`needed` 附實際錯誤 | — |
 
+CLI 也已受理、達重查上限仍未完成時，兩個管道都算確認受限，記入 `notes` 後回 `ok`。
 「逾重查上限」歸類為服務端限制而非存取問題：審查跑得久不代表沒有授權。外部審查是
 **流程關卡，不是 GitHub required status check**——它不該擋住合併。
 
