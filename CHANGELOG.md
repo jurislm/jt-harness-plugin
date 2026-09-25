@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2](https://github.com/jurislm/jt-harness-plugin/compare/v2.0.1...v2.0.2) (2026-09-25)
+
+
+### 🐛 Bug Fixes
+
+* don't retry failed Codex reviews ([5e9f163](https://github.com/jurislm/jt-harness-plugin/commit/5e9f1632d148f1b9971fd1e2139402ba072026e1))
+
 ## [2.0.1](https://github.com/jurislm/jt-harness-plugin/compare/v2.0.0...v2.0.1) (2026-09-25)
 
 
