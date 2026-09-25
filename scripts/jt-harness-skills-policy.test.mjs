@@ -64,11 +64,13 @@ test("JT Harness 规定一次审查、CodeRabbit 退路和自动合并条件", (
     "superpowers:requesting-code-review",
     "superpowers:receiving-code-review",
     "one complete Codex review",
-    "starts a Codex PR review automatically",
+    "wait for it to finish and return a result",
     "one CodeRabbit review",
+    "wait for its result",
     "CodeRabbit CLI once",
     "Do not request a second complete Codex or CodeRabbit review",
     "required checks pass on the current head",
+    "approval rules and current review decision",
     "reports the PR mergeable",
   ]) {
     assert.ok(skill.includes(rule), `SKILL.md 缺少「${rule}」`);

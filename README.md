@@ -9,8 +9,8 @@ JurisLM 的自动触发 Codex Skill。在 Agent 开始软件开发、修 bug、�
 - 开始开发前在 Linear 查找对应 issue；没有匹配项时创建追踪 issue，再记录开始状态。完成后更新结果、PR、审查、检查与合并状态。
 - Coolify 资源使用 `coolify-plugin:coolify`；Hetzner Cloud 或 Storage Box 使用 `hetzner-plugin:hetzner`。
 - 开发工法交给对应的 `superpowers:*` Skill；审查使用 `requesting-code-review` 和 `receiving-code-review`。
-- Codex 与 CodeRabbit 各进行一次完整审查；仓库自动启动的 Codex PR 审查计为这一次。CodeRabbit 先走 PR；该管道受限时再用 CLI；两种管道都受限时依赖 Codex 审查。
-- 处理审查意见并验证修正，不重复完整审查。所有 findings 解决、必需检查通过且 PR 符合目标 repo 合并规则后，自动合并；用户指定 review-only、draft 或不合并时除外。
+- Codex 与 CodeRabbit 各进行一次完整审查；自动启动的审查必须完成并返回结果才计入。CodeRabbit 先走 PR；该管道受限时再用 CLI；两种管道都受限时依赖已完成的 Codex 审查。
+- 处理审查意见并验证修正，不重复完整审查。确认目标 repo 的审批规则已满足、所有 findings 解决、必需检查通过且 PR 可合并后，自动合并；用户指定 review-only、draft 或不合并时除外。
 
 ## 安装
 
