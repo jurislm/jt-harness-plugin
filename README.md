@@ -1,43 +1,27 @@
 # JT Harness Plugin
 
-JurisLM 的 skills-only portable OpenAI/Codex Plugin。它提供以 Linear issue 為需求來源的端到端交付工作流：釐清、worktree、TDD、PR、review、merge、驗收與 Linear readback。
+JurisLM 的自动触发 Codex Skill。在 Agent 开始软件开发、修 bug、代码审查、PR 或部署任务时提供交付规则，不编排独立 workflow。
 
-## 安裝
+唯一 Skill：`using-jt-harness`。
+
+## 规则
+
+- 开始开发前在 Linear 查找对应 issue；没有匹配项时创建追踪 issue，再记录开始状态。完成后更新结果、PR、审查、检查与合并状态。
+- Coolify 资源使用 `coolify-plugin:coolify`；Hetzner Cloud 或 Storage Box 使用 `hetzner-plugin:hetzner`。
+- 开发工法交给对应的 `superpowers:*` Skill；审查使用 `requesting-code-review` 和 `receiving-code-review`。
+- Codex 与 CodeRabbit 各进行一次完整审查；自动启动的审查必须完成并返回结果才计入。CodeRabbit 先走 PR；该管道受限时再用 CLI；两种管道都受限时依赖已完成的 Codex 审查。
+- 处理审查意见并验证修正，不重复完整审查。确认目标 repo 的审批规则已满足、所有 findings 解决、必需检查通过且 PR 可合并后，自动合并；用户指定 review-only、draft 或不合并时除外。
+
+## 安装
 
 ```bash
 codex plugin marketplace add https://github.com/jurislm/jt-harness-plugin --ref main
 codex plugin add jt-harness-plugin@jurislm-jt-harness
 ```
 
-安裝後請開啟新的 Codex session，讓 Skills 重新載入。
+安装或更新后开启新的 Codex session，让自动触发的 Skill 重新载入。
 
-## Skills
-
-公開入口：
-
-- `using-jt-workflow`：紀律與 Skill 選用。
-- `engineering-delivery`：單一 Linear issue 的端到端交付 coordinator。
-
-由 `engineering-delivery` 調用的內部 Skill：
-
-- `delivery-preflight`
-- `external-review-gate`
-- `merge-gate`
-- `acceptance-readback`
-
-本 Plugin 不提供 MCP server、slash commands、OAuth 或 hosted endpoint。
-
-版本以 GitHub Release 發布；此 skills-only Plugin 不發布 npm package。
-
-## 授權與依賴
-
-指向一個 Linear issue 並要求交付，即授權流程走到合併與驗收；真實歧義、重大風險、secret、缺少權限或不可逆 production mutation 才會暫停。
-
-工作流依賴：
-
-- `superpowers:*` Skills
-- Linear MCP 或使用者提供的 Linear issue 內容
-- `coderabbit:code-review` Skill
+本 Plugin 不提供 MCP server、slash commands、OAuth 或 hosted endpoint。版本以 GitHub Release 发布；此 skills-only Plugin 不发布 npm package。
 
 ## License
 

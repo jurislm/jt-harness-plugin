@@ -26,7 +26,7 @@ assert.equal(plugin.version, packageJson.version);
 assert.equal(fallback.version, plugin.version);
 assert.equal(plugin.extensions["com.openai"].interface.displayName, "JT Harness Plugin");
 assert.deepEqual(plugin.extensions["com.openai"].interface.defaultPrompt, [
-  "Use JT Harness to deliver this Linear issue end to end.",
+  "Use using-jt-harness for this engineering task.",
 ]);
 assert.equal(fallback.skills, "./skills/");
 assert.equal(Object.hasOwn(fallback, "mcpServers"), false);
@@ -43,14 +43,7 @@ assert.equal(entry.policy.installation, "AVAILABLE");
 assert.equal(entry.policy.authentication, "ON_INSTALL");
 assert.equal(entry.category, "Developer tools");
 
-const expectedSkills = [
-  "acceptance-readback",
-  "delivery-preflight",
-  "engineering-delivery",
-  "external-review-gate",
-  "merge-gate",
-  "using-jt-workflow",
-];
+const expectedSkills = ["using-jt-harness"];
 const actualSkills = readdirSync(join(root, "skills"), { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name)
