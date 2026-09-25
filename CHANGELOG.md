@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/jurislm/jt-harness-plugin/compare/v2.0.0...v2.0.1) (2026-09-25)
+
+
+### 🐛 Bug Fixes
+
+* limit PR reviews to one run each ([fa6f639](https://github.com/jurislm/jt-harness-plugin/commit/fa6f639996bc6871679114c0acc4fca0c9cb0e99))
+
 ## [2.0.0](https://github.com/jurislm/jt-harness-plugin/compare/v1.44.2...v2.0.0) (2026-09-25)
 
 
