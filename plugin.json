@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "jt-harness-plugin",
   "version": "1.44.2",
-  "description": "JurisLM's Linear-driven delivery workflow for end-to-end engineering execution.",
+  "description": "JurisLM's Notion-driven product management and engineering delivery workflow.",
   "author": {
     "name": "Terry Chen",
     "url": "https://github.com/jurislm"
@@ -12,7 +12,7 @@
   "license": "UNLICENSED",
   "keywords": [
     "workflow",
-    "linear",
+    "notion",
     "github-flow",
     "tdd",
     "code-review",
@@ -22,8 +22,8 @@
     "com.openai": {
       "interface": {
         "displayName": "JT Harness Plugin",
-        "shortDescription": "Deliver Linear issues end to end.",
-        "longDescription": "Use the JT Harness workflow to clarify, implement, review, merge, validate, and record a Linear issue.",
+        "shortDescription": "Manage Notion work and deliver tasks.",
+        "longDescription": "Use JT Harness to manage Notion requirements and deliver development tasks through review, merge, and acceptance.",
         "developerName": "JurisLM",
         "category": "Developer tools",
         "capabilities": [
@@ -31,7 +31,7 @@
           "Write"
         ],
         "defaultPrompt": [
-          "Use JT Harness to deliver this Linear issue end to end."
+          "Use JT Harness to deliver this Notion development task end to end."
         ],
         "websiteURL": "https://github.com/jurislm/jt-harness-plugin"
       }

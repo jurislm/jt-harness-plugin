@@ -26,7 +26,7 @@ assert.equal(plugin.version, packageJson.version);
 assert.equal(fallback.version, plugin.version);
 assert.equal(plugin.extensions["com.openai"].interface.displayName, "JT Harness Plugin");
 assert.deepEqual(plugin.extensions["com.openai"].interface.defaultPrompt, [
-  "Use JT Harness to deliver this Linear issue end to end.",
+  "Use JT Harness to deliver this Notion development task end to end.",
 ]);
 assert.equal(fallback.skills, "./skills/");
 assert.equal(Object.hasOwn(fallback, "mcpServers"), false);
@@ -49,6 +49,7 @@ const expectedSkills = [
   "engineering-delivery",
   "external-review-gate",
   "merge-gate",
+  "product-management",
   "using-jt-workflow",
 ];
 const actualSkills = readdirSync(join(root, "skills"), { withFileTypes: true })

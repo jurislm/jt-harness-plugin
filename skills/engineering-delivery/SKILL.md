@@ -1,26 +1,32 @@
 ---
 name: engineering-delivery
 description: >
-  一件工程案件的端到端交付 coordinator：以 Linear issue 為需求來源，走完 N0 前提 →
+  一件 Notion 開發任務的端到端交付 coordinator：讀取關聯產品需求與工程文件，走完 N0 前提 →
   需求分析 → 設計 → worktree → TDD 實作 → 本地審查 → PR → 外部審查 → 合併 →
-  驗收 → 結案。指向一個 Linear issue 並要求交付即為完整授權。
-  Use when the user asks to 做完這個 Linear issue、把這個需求做完、
-  deliver this issue end to end.
+  驗收 → 結案。指向一個 Notion 開發任務並要求交付即為完整授權。
+  Use when the user asks to 做完這個 Notion 開發任務、交付 NT 任務、
+  deliver this task end to end.
 ---
 
 ## 輸入
 
-一個 Linear issue。issue 是需求、範圍與驗收標準的唯一來源，不另建平行規劃文件。
+一個 Notion `功能要求` 資料庫中 `記錄類型` 為 `開發任務` 的頁面。先讀回 `工作項目 ID`
+（`NT-*`）、頁面 URL、`所屬專案`、任務內的開發規格與驗收條件、`對應需求`、`來源問題`、
+`工程文件` 關聯。`對應需求` 可有多筆；一個任務解決多個需求時仍只交付同一個任務。
+
+產品行為以關聯的產品需求與已發布工程文件為準；任務頁持有本次工程範圍、技術方案與驗收。
+來源問題提供背景與重現證據。若輸入只有問題或產品需求，先由 `product-management` 產生或
+找到對應開發任務，再進入本流程。沒有 Notion 任務頁、穩定 ID 或驗收條件，不進 N3。
 
 ## 授權契約
 
-使用者指向一個 Linear issue 並要求交付，即授權走完整條鏈至合併與驗收，不逐項確認。
+使用者指向一個 Notion 開發任務並要求交付，即授權走完整條鏈至合併與驗收，不逐項確認。
 只有下列四類會停下，對應 `blocked.kind`：
 
 | kind | 什麼情況 |
 |---|---|
-| `ambiguity` | 依 issue、codebase 與現有證據仍無法排除的真實歧義 |
-| `authorization` | 超出 issue 範圍的重大架構變更、新外部依賴、新 production 風險、平台強制人工核准 |
+| `ambiguity` | 依任務、關聯需求／規格、codebase 與現有證據仍無法排除的真實歧義 |
+| `authorization` | 超出任務範圍的重大架構變更、新外部依賴、新 production 風險、平台強制人工核准 |
 | `access_config` | 缺少必要 credential 或 permission；具名依賴未安裝或未登入 |
 | `risk` | 不可逆或破壞性 production mutation；工作樹有他人未提交變更；rollback 目標不明或涉 migration |
 
@@ -34,21 +40,21 @@ description: >
 | N0 前提 | `delivery-preflight` 回 `ok` | `ok` → N1 ／ 否則把它的 internal result 包成 envelope（`branch`／`pr` 為 `null`）後回傳 |
 | N1 需求分析 | 範圍與驗收標準明確 | 明確 → N2 ／ 真實歧義 → `halted/ambiguity` |
 | N2 設計 | 方案定案 | 定案 → N3 ／ 需重大架構變更或新依賴 → `halted/authorization` |
-| N3 工作樹 | 在**對得上本次 issue** 的 feature 分支且工作區乾淨 | 就緒 → N4 ／ 當前為預設分支 → 先建分支再進 N4 ／ 有他人未提交變更 → `halted/risk` ／ 沿用分支對不上本次 issue 且（無 commit **或**查得到已合併 PR）→ 從最新預設分支開對得上的新分支再進 N4 ／ 沿用分支有 commit 但查無已合併 PR → `halted/risk` |
+| N3 工作樹 | 在**對得上本次任務 ID** 的 feature 分支且工作區乾淨 | 就緒 → N4 ／ 當前為預設分支 → 先建分支再進 N4 ／ 有他人未提交變更 → `halted/risk` ／ 沿用分支對不上本次任務且（無 commit **或**查得到已合併 PR）→ 從最新預設分支開對得上的新分支再進 N4 ／ 沿用分支有 commit 但查無已合併 PR → `halted/risk` |
 | N4 實作 | 測試綠＋行為性驗收通過 | 通過 → N5 ／ 非預期行為 → 除錯後回 N4 |
 | N5 本地審查 | 品質＋資安＋資料三面過 | 過 → N6 ／ 有 finding → 回 N4 |
-| N6 開 PR | PR 存在且帶 Linear identifier | 建立 → N7 ／ 掃出 secret → 回 N4 清除後重來 |
+| N6 開 PR | PR 存在且帶 `NT-*` ID 與 Notion 任務 URL | 建立 → N7 ／ 掃出 secret → 回 N4 清除後重來 |
 | N7 外部審查 | PR 的 check 已到終態，且 `external-review-gate` 回終態 | `ok` 且 `needsCodeChange` 為真 → **回 N4** ／ `ok` 且為假 → N8 ／ `not_applicable` → N8 ／ `halted` → 回傳 |
 | N8 合併 | `merge-gate` 回 `ok` | `ok` → 合併 → N9 ／ `halted` 且 `recoverableByCode` 為真 → **回 N4** ／ `halted` 且為假 → 回傳 ／ `not_applicable` → 回傳 |
 | N9 驗收 | `acceptance-readback` 回 `ok` | `ok` → N10 ／ `halted` 且 `recoverableByCode` 為真 → **回 N4** ／ `halted` 且為假 → 回傳 |
-| N10 結案 | Linear 已留完整記錄 | → `awaiting_owner_acceptance` |
+| N10 結案 | Notion 任務已留完整記錄，`驗收狀態` 為 `待產品接受` | → `awaiting_owner_acceptance` |
 
 **N7 的前置：先等 check 到終態。** 進入外部審查前，先監看 PR 上的 check 直到全部到達
 終態（有背景監看工具就用）。`check` 尚未回報完畢時不要進 `merge-gate`——那時的
 `mergeStateStatus` 必然是 `BLOCKED`（required check 缺席），會被誤判成需要改碼而回到
 N4，白跑一輪並多燒一次外部審查額度。
 
-**回頭邊的收斂保護**：N7／N8／N9 回到 N4 時，同一 `(issue, branch, 節點)` 連續第三次
+**回頭邊的收斂保護**：N7／N8／N9 回到 N4 時，同一 `(taskId, branch, 節點)` 連續第三次
 回頭即 `halted/ambiguity`，`needed` 寫明反覆失敗的具體症狀。此計數器與
 `external-review-gate` 的重查上限互相獨立，不共用。
 
@@ -56,9 +62,17 @@ N4，白跑一輪並多燒一次外部審查額度。
 
 ### N1 需求分析
 
-讀 issue 的標題、描述、留言與驗收標準。**先做範圍探索再做精確搜尋**——一開始就用
+讀任務頁的標題、內文、留言、屬性，以及全部關聯產品需求、來源問題與工程文件。
+產品規格須讀回 `已發布` 文件；`新`／`審核中` 的需求不能自行當成已核准範圍。
+任務與已發布規格衝突時回 `halted/ambiguity`。**先做範圍探索再做精確搜尋**——一開始就用
 自己想得到的關鍵字去搜，只會找到自己已經想到的東西。接著進
 `superpowers:brainstorming`，依它的分類決定要問多少。
+
+### N2 設計
+
+技術方案與逐條驗收條件寫在同一開發任務頁。產品行為變更先由 `product-management` 更新
+關聯產品需求與工程文件；任務頁引用核准後的版本。保存後讀回任務與關聯，確認頁面仍是
+`開發任務`、`工作項目 ID` 未變，才進 N3。
 
 ### N3 工作樹
 
@@ -76,14 +90,14 @@ git status --porcelain     # 有輸出就停下回報
 ```
 
 沿用時落後就 rebase；新建時用 `git worktree add --no-track -b <branch> ...`，不加
-`--no-track` 會讓 `git status` 一路報 ahead／behind 預設分支。分支名為 Linear
-identifier 加簡短 slug。
+`--no-track` 會讓 `git status` 一路報 ahead／behind 預設分支。分支名為 Notion
+`工作項目 ID` 加簡短 slug，從頁面實際欄位讀取，不從 URL 猜測。
 
-**沿用的分支若名稱對不上本次 issue**，先確認它上面的工作沒有失聯，再開新分支。兩個
+**沿用的分支若名稱對不上本次任務**，先確認它上面的工作沒有失聯，再開新分支。兩個
 問題都要問，因為「有沒有 commit」與「是否已交付」是兩件事：
 
 - 無 commit，**或**查得到該分支已合併的 PR → 工作已交付，從最新 `<defaultBranch>`
-  開一個對得上本次 issue 的新分支，仍在同一個 worktree 內，不另開 worktree
+  開一個對得上本次任務的新分支，仍在同一個 worktree 內，不另開 worktree
 - 有 commit 但查不到已合併的 PR → `halted/risk`，別把別人的工作留在原地失聯
 
 ⚠️ **`git log` 只能判斷有沒有 commit，不能判斷是否已合併**——squash merge 不會讓原始
@@ -100,7 +114,7 @@ commit 成為預設分支的祖先（多數 repo 採 squash merge 時都是這�
 
 - **驗證指令一律取自目標 repo 自己宣告的定義**，不憑記憶拼工具子指令；查不到就先查。
 - **commit 後覆核實際落入的檔案清單是否等於預期範圍**，差集當場處置並記入 `notes`。
-- 與本次交付無關的新問題在 Linear 另開 issue，不在本 worktree 處理。
+- 與本次交付無關的新問題交由 `product-management` 記入 Notion `問題追蹤`，不在本 worktree 處理。
 
 ### N5 本地審查
 
@@ -114,7 +128,7 @@ commit 成為預設分支的祖先（多數 repo 採 squash merge 時都是這�
 push 前掃 `<remote>/<defaultBranch>..HEAD` 的**每一個 commit**，不只最終 aggregate
 diff——secret 若在某個 commit 加入、後續 commit 刪除，aggregate diff 是乾淨的，但
 push 仍會把那個 commit 推上去。發現即回 N4，從所有將推送的 commit 清除、處理憑證
-輪替、重新掃描後才 push。PR 標題或內文帶 Linear identifier。
+輪替、重新掃描後才 push。PR 標題或內文帶 `工作項目 ID` 與 Notion 任務 URL。
 
 ### N7–N9
 
@@ -131,7 +145,8 @@ push 仍會把那個 commit 推上去。發現即回 N4，從所有將推送的 
 |---|---|---|---|
 | `status` | `ok` \| `halted` \| `not_applicable` \| `awaiting_owner_acceptance` | 是 | `awaiting_owner_acceptance` 只由 N10 產生 |
 | `stage` | string | `halted` 時必填 | 節點代號 |
-| `issue` | string \| null | 是（值可為 `null`） | Linear identifier。正常案件必須有值；只有 Release Please 版號 PR 允許 `null` |
+| `task` | string \| null | 是（值可為 `null`） | Notion 開發任務 URL；只有 Release Please 版號 PR 允許 `null` |
+| `taskId` | string \| null | 是（值可為 `null`） | Notion `工作項目 ID`；正常案件必須有值 |
 | `branch` | string \| null | N3 之後必填 | N0–N2 尚未建立分支時為 `null` |
 | `pr` | string \| null | 否 | 尚未開 PR 時為 `null` |
 | `evidence[]` | `{ kind, ref, summary }` | 否 | `kind` ∈ `test` \| `runtime` \| `ci` \| `deploy` |
@@ -139,7 +154,7 @@ push 仍會把那個 commit 推上去。發現即回 N4，從所有將推送的 
 | `blocked` | `{ kind, what, needed }` | `halted` 時必填 | `blocked.needed` 必須是給人看的下一步 |
 | `notes[]` | string | 否 | 服務端限制、hook 造成的範圍外變動、未自動化的觀察 |
 
-**內部 Skill 不填寫案件層欄位**（`issue`／`branch`／`pr`／`evidence[]`），那是本
+**內部 Skill 不填寫案件層欄位**（`task`／`taskId`／`branch`／`pr`／`evidence[]`），那是本
 coordinator 的責任。
 
 **`halted/<kind>` 是簡寫**，全流程通用：它代表 `status: halted` 加上
@@ -154,13 +169,12 @@ N7 重跑後才轉為 `fixed`。一個關卡若連「採不採納」都還沒決
 
 ## 重跑
 
-**重跑不是從頭再做一遍。**帶副作用的節點（N3 建分支、**N4 commit**、N6 開 PR、
-N8 合併）與案件記錄，
-一律以 `(issue, branch, 節點)` 為冪等鍵：先讀該鍵既有的副作用——既有分支、既有 PR、既有
-Linear 留言——存在且內容未變就跳過，不重建。N0–N2 沒有帶副作用的動作，冪等鍵在 N3 之後
-才完整。無副作用的關卡（`delivery-preflight`、`merge-gate`）是純查證，天然可重跑。
+**重跑不是從頭再做一遍。冪等鍵：**N1／N2 的任務內容與留言以 `(taskId, 節點)` 為鍵；
+N3 建分支、**N4 commit**、N6 開 PR、N8 合併與後續案件記錄以 `(taskId, branch, 節點)`
+為鍵。先讀既有頁面、留言、分支、commit 與 PR；內容未變就跳過。`delivery-preflight`、
+`merge-gate` 是純查證，天然可重跑。
 
-既有副作用**內容已變**時是更新而非跳過：PR 已存在但標題或內文對不上本次 issue 就更新
+既有副作用**內容已變**時是更新而非跳過：PR 已存在但標題或內文對不上本次任務就更新
 它，不另開一個；N4 的 commit 以工作樹實際狀態為準，已 commit 過的內容不重複 commit。
 
 完整的分層規則與案件記錄的去重標記見 `references/case-record.md`。
@@ -171,8 +185,8 @@ Linear 留言——存在且內容未變就跳過，不重建。N0–N2 沒有�
 
 ## 合併後出現的版號 PR
 
-Release Please 這類版號 PR 不對應任何 Linear issue，因此**不會從 N0 進入本 graph**，也
-就永遠不會走到 N6——N6「PR 帶 Linear identifier」的條件對它不適用，不是對它的例外。
+Release Please 這類版號 PR 不對應任何 Notion 開發任務，因此**不會從 N0 進入本 graph**，也
+就永遠不會走到 N6——N6「PR 帶 `工作項目 ID`」的條件對它不適用，不是對它的例外。
 `merge-gate` 之所以仍為它保留 `not_applicable` 一列，是為了在有人手動把它送進判定時
 仍有出口，不是表示本 graph 會產生這種 PR。它由
 目標 repo 自己 source-controlled 的 validator 處理；本流程對它只做一件事：**監看終態

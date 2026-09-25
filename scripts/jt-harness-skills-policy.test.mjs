@@ -6,7 +6,7 @@ const repositoryRoot = new URL("../", import.meta.url);
 const skillsDir = new URL("skills/", repositoryRoot);
 const RETIRED_SINGLE_SKILL = ["jt", "-flow", "-one"].join("");
 
-export const PUBLIC_SKILLS = ["engineering-delivery", "using-jt-workflow"];
+export const PUBLIC_SKILLS = ["engineering-delivery", "product-management", "using-jt-workflow"];
 export const INTERNAL_SKILLS = [
   "acceptance-readback",
   "delivery-preflight",
@@ -39,7 +39,7 @@ export function frontmatterDescription(source) {
   return match[1].replace(/\s+/g, " ").trim();
 }
 
-test("JT Harness 只提供六個 Skill，且退役的單一流程 Skill 已退場", () => {
+test("JT Harness 只提供七個 Skill，且退役的單一流程 Skill 已退場", () => {
   const actual = readdirSync(skillsDir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
@@ -69,7 +69,7 @@ test("using-jt-workflow 承載三條紀律、具名依賴判別與紅旗表", ()
 
   assert.match(source, /可替換工具一律是例子/);
   assert.match(source, /repo 事實去讀該 repo 自己宣告的定義/);
-  assert.match(source, /Linear 是案件檔案/);
+  assert.match(source, /Notion 是案件檔案/);
   assert.match(source, /具名依賴/);
   assert.match(source, /來源優先序/);
 
@@ -91,7 +91,7 @@ test("delivery-preflight 列出六項查證且每項都有出口", () => {
     "版本控制",
     "GitHub",
     "remote 解析唯一",
-    "案件管理讀取管道",
+    "Notion 四庫",
   ]) {
     assert.match(source, new RegExp(marker), `缺少查證項：${marker}`);
   }
@@ -118,7 +118,7 @@ test("engineering-delivery 定義 N0-N10 且每個節點都有出口", () => {
   assert.match(source, /連續第三次/, "回頭邊必須有收斂保護");
   assert.match(source, /awaiting_owner_acceptance/);
 
-  for (const field of ["`status`", "`stage`", "`issue`", "`branch`", "`pr`", "`blocked`"]) {
+  for (const field of ["`status`", "`stage`", "`task`", "`taskId`", "`branch`", "`pr`", "`blocked`"]) {
     assert.ok(source.includes(field), `envelope schema 缺少欄位 ${field}`);
   }
   assert.match(source, /只有 Release Please 版號 PR 允許 `null`/);
@@ -153,7 +153,7 @@ test("案件記錄以 references 子檔承載，不是獨立 Skill", () => {
 
   assert.match(record, /去重/);
   assert.match(record, /寫入失敗/);
-  assert.match(record, /Done 由 product owner 決定/);
+  assert.match(record, /由 product owner 決定/);
 });
 
 test("using-jt-workflow 保留環境問題處置與平行查證方法論", () => {
@@ -248,7 +248,7 @@ test("live 檔案不再引用退役的單一流程 Skill", () => {
   assert.deepEqual(offenders, [], `這些 live 檔案仍引用退役單一流程 Skill：${offenders.join(", ")}`);
 });
 
-test("六個 Skill 都不使用需要拿捏的措辭", () => {
+test("七個 Skill 都不使用需要拿捏的措辭", () => {
   const HEDGES = ["合理時間", "適當", "看情況", "盡快"];
   for (const name of ALL_SKILLS) {
     const source = readSkill(name);
@@ -306,7 +306,7 @@ test("N3 對沿用分支的三種情況都有轉移", () => {
   const source = readSkill("engineering-delivery");
 
   assert.match(source, /無 commit，\*\*或\*\*查得到該分支已合併的 PR/, "已交付的分支要能開新分支，不是停下");
-  assert.match(source, /對不上本次 issue/);
+  assert.match(source, /對不上本次任務/);
   assert.match(source, /halted\/risk/);
 });
 
@@ -375,5 +375,32 @@ test("acceptance-readback 綁定合併 commit 並要求遮罩證據", () => {
   const source = readSkill("acceptance-readback");
 
   assert.match(source, /head SHA \*\*必須等於本次的合併 commit\*\*/);
-  assert.match(source, /先遮罩/, "evidence 會寫進 Linear，不得夾帶 credential");
+  assert.match(source, /先遮罩/, "evidence 會寫進 Notion，不得夾帶 credential");
+});
+
+test("產品管理使用四個 Notion 資料庫，開發任務與需求同庫", () => {
+  const source = readSkill("product-management");
+
+  for (const name of ["`專案`", "`問題追蹤`", "`功能要求`", "`工程文件`", "`對應需求`"]) {
+    assert.ok(source.includes(name), `產品管理缺少 ${name}`);
+  }
+  assert.match(source, /不另建開發任務資料庫/);
+  assert.match(source, /多個需求由同一變更滿足時使用同一任務/);
+});
+
+test("Notion 工作項目分開產品需求與開發任務，並承接案件記錄", () => {
+  const workflow = readSkill("using-jt-workflow");
+  const delivery = readSkill("engineering-delivery");
+  const preflight = readSkill("delivery-preflight");
+  const record = readFileSync(new URL("engineering-delivery/references/case-record.md", skillsDir), "utf8");
+
+  assert.match(workflow, /Notion 是案件檔案/);
+  assert.match(delivery, /功能要求/);
+  assert.match(delivery, /產品需求/);
+  assert.match(delivery, /開發任務/);
+  assert.match(delivery, /對應需求/);
+  assert.match(delivery, /`task`/);
+  assert.match(preflight, /Notion/);
+  assert.match(record, /Notion 留言/);
+  assert.doesNotMatch([workflow, delivery, preflight, record].join("\n"), /Linear issue|Linear 是案件檔案/);
 });

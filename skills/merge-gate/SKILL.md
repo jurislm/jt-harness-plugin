@@ -56,5 +56,5 @@ review gate），那份為準。它沒寫時，本 Skill 的預設值是：
 標題形如 `chore(<defaultBranch>): release X.Y.Z` 的 PR **不由本流程合併**。它應由目標
 repo 自己 source-controlled 的 validator 處理；人工合併等於跳過那整套檢查。本 Skill
 對它只回 `not_applicable`，由 coordinator 監看其終態後回報。目標 repo 沒有這種
-validator 時同樣不自行合併：回報現況，交由使用者決定。這類 PR 不對應 Linear issue，
+validator 時同樣不自行合併：回報現況，交由使用者決定。這類 PR 不對應 Notion 開發任務，
 略過 identifier 與 readback 的要求。

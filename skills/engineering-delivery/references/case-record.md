@@ -3,11 +3,12 @@
 ## 落筆時機
 
 釐清完成、設計決策、PR 開出、審查處置、驗收證據、任何一次停下。
+每筆寫在同一 Notion 開發任務頁面的留言，附原始證據 ref；產品需求與工程文件透過 relation 引用。
 
 ## 去重
 
-每筆留言帶穩定標記：`issue` ＋ `branch` ＋ 節點 ＋ 內容雜湊。重跑時若同標記留言已
-存在且內容未變，跳過而非重貼。
+每筆 Notion 留言帶穩定標記：`taskId` ＋ 節點 ＋ 內容雜湊；N3 後另加 `branch`。
+重跑先讀現有留言，同標記且內容未變就跳過。
 
 ## 寫入失敗
 
@@ -18,8 +19,8 @@
 
 ## 完成與接受的分界
 
-技術驗收齊全時回 `awaiting_owner_acceptance`，**不得自行把 Linear 標 Done**。
-**Done 由 product owner 決定**——技術驗證通過只是必要條件之一，不是充分條件。
+技術驗收齊全時將任務的 `驗收狀態` 設為 `待產品接受`，回 `awaiting_owner_acceptance`。
+**`已接受` 與 `已發表` 由 product owner 決定**——技術驗證通過只是必要條件之一。
 
 ## 重跑語義
 
@@ -28,6 +29,6 @@
 | 類別 | 誰 | 規則 |
 |---|---|---|
 | 無副作用 | `delivery-preflight`、`merge-gate` | 純查證，天然可重跑，不需要冪等鍵 |
-| 有副作用 | `external-review-gate`、`acceptance-readback`、N3／N6／N8 與本記錄 | 以 `(issue, branch, 節點)` 為冪等鍵；重跑時先讀既有副作用，未變即跳過 |
+| 有副作用 | `external-review-gate`、`acceptance-readback`、N3／N6／N8 與本記錄 | N1／N2 以 `(taskId, 節點)`；N3 後以 `(taskId, branch, 節點)` 為冪等鍵，重跑先讀既有副作用 |
 
-冪等鍵只在 N3 之後才完整。N0–N2 沒有帶副作用的動作，不受影響。
+`taskId` 在 N0 必須從任務頁讀回；N3 建分支後才加入 `branch`。不存在的留言才新增。

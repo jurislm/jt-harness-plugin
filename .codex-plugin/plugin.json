@@ -11,15 +11,15 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "JT Harness Plugin",
-    "shortDescription": "Deliver Linear issues end to end.",
-    "longDescription": "Use the JT Harness workflow to clarify, implement, review, merge, validate, and record a Linear issue.",
+    "shortDescription": "Manage Notion work and deliver tasks.",
+    "longDescription": "Use JT Harness to manage Notion requirements and deliver development tasks through review, merge, and acceptance.",
     "developerName": "JurisLM",
     "category": "Developer tools",
     "capabilities": [
       "Read",
       "Write"
     ],
-    "defaultPrompt": "Use JT Harness to deliver this Linear issue end to end.",
+    "defaultPrompt": "Use JT Harness to deliver this Notion development task end to end.",
     "websiteURL": "https://github.com/jurislm/jt-harness-plugin"
   }
 }

@@ -53,5 +53,5 @@ coordinator 依這個布林值決定是否回 N4，**不讀 `blocked.what` 的�
 輸出才回 `ok`，`payload` 附 `evidence[]`。
 
 ⚠️ **證據進 `evidence[]` 之前先遮罩。**實際請求與 log 會夾帶 credential、token、cookie
-與 shell 環境值，而 `evidence[]` 會被寫進 Linear 留言——那是一個比 repo 更多人看得到的
+與 shell 環境值，而 `evidence[]` 會被寫進 Notion 任務留言——那是一個比 repo 更多人看得到的
 地方。遮罩後才寫入；無法確認某段輸出是否含密鑰時，記 ref 與摘要，不貼原文。
