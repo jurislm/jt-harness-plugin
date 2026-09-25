@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/jurislm/jt-harness-plugin/compare/v1.44.2...v2.0.0) (2026-09-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* replace the N0-N10 delivery coordinator with an automatically invoked using-jt-harness skill.
+
+### 🚀 New Features
+
+* auto-load JT Harness rules and merge after review ([1bb53ec](https://github.com/jurislm/jt-harness-plugin/commit/1bb53ecca4ed25f50ee12f1a7a527f7001532c72))
+
 ## [1.44.2](https://github.com/jurislm/jt-harness-plugin/compare/v1.44.1...v1.44.2) (2026-09-23)
 
 
