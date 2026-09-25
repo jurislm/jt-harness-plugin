@@ -1,11 +1,19 @@
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import test from "node:test";
 
 const repositoryRoot = new URL("../", import.meta.url);
 const skillsDir = new URL("skills/", repositoryRoot);
 const skill = readFileSync(new URL("using-jt-harness/SKILL.md", skillsDir), "utf8");
 const frontmatter = skill.match(/^---\n([\s\S]*?)\n---/);
+const retiredSkillIds = [
+  "engineering-delivery",
+  "delivery-preflight",
+  "acceptance-readback",
+  "external-review-gate",
+  "merge-gate",
+  "using-jt-workflow",
+];
 assert.ok(frontmatter, "SKILL.md 必須以 YAML frontmatter 開頭");
 
 test("JT Harness 只暴露一个自动触发的规则 Skill", () => {
@@ -20,9 +28,28 @@ test("JT Harness 只暴露一个自动触发的规则 Skill", () => {
   assert.doesNotMatch(frontmatter[1], /disable-model-invocation:\s*true/);
 });
 
+test("已退役的 Skill 名称不残留在入口或 marketplace metadata", () => {
+  for (const path of [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "README.md",
+    "plugin.json",
+    ".codex-plugin/plugin.json",
+    ".agents/plugins/marketplace.json",
+    "scripts/validate-plugin-manifests.mjs",
+  ]) {
+    const file = new URL(path, repositoryRoot);
+    if (!existsSync(file)) continue;
+    const source = readFileSync(file, "utf8");
+    for (const skillId of retiredSkillIds) {
+      assert.ok(!source.includes(skillId), `${path} 仍引用已退役 Skill ${skillId}`);
+    }
+  }
+});
+
 test("JT Harness 规定 Linear 更新和平台插件路由", () => {
   for (const rule of [
-    "set it to In Progress",
+    "Set it to In Progress",
     "create a concise issue",
     "At completion, record the result",
     "coolify-plugin:coolify",
@@ -37,6 +64,7 @@ test("JT Harness 规定一次审查、CodeRabbit 退路和自动合并条件", (
     "superpowers:requesting-code-review",
     "superpowers:receiving-code-review",
     "one complete Codex review",
+    "starts a Codex PR review automatically",
     "one CodeRabbit review",
     "CodeRabbit CLI once",
     "Do not request a second complete Codex or CodeRabbit review",
