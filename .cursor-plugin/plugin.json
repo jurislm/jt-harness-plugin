@@ -1,5 +1,6 @@
 {
   "name": "jt-harness-plugin",
+  "displayName": "JT Harness Plugin",
   "description": "JurisLM's engineering delivery rules for Cursor.",
   "author": {
     "name": "JurisLM"
