@@ -1,0 +1,13 @@
+{
+  "name": "jurislm-jt-harness",
+  "owner": {
+    "name": "JurisLM"
+  },
+  "plugins": [
+    {
+      "name": "jt-harness-plugin",
+      "source": ".",
+      "description": "JurisLM's engineering delivery rules for Cursor."
+    }
+  ]
+}
