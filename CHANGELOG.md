@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/jurislm/jt-harness-plugin/compare/v2.1.0...v2.1.1) (2026-09-28)
+
+
+### 🐛 Bug Fixes
+
+* show JT Harness Plugin in Cursor ([#19](https://github.com/jurislm/jt-harness-plugin/issues/19)) ([385899e](https://github.com/jurislm/jt-harness-plugin/commit/385899eae3cdbaaf89c57c6adc7d34f2b0acf981))
+
 ## [2.1.0](https://github.com/jurislm/jt-harness-plugin/compare/v2.0.2...v2.1.0) (2026-09-28)
 
 
