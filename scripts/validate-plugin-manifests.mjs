@@ -8,6 +8,8 @@ const readJson = (file) => JSON.parse(readFileSync(join(root, file), "utf8"));
 const plugin = readJson("plugin.json");
 const fallback = readJson(".codex-plugin/plugin.json");
 const marketplace = readJson(".agents/plugins/marketplace.json");
+const cursorPlugin = readJson(".cursor-plugin/plugin.json");
+const cursorMarketplace = readJson(".cursor-plugin/marketplace.json");
 const packageJson = readJson("package.json");
 
 const ajv = new Ajv2020({ allErrors: true, strict: false });
@@ -29,6 +31,13 @@ assert.deepEqual(plugin.extensions["com.openai"].interface.defaultPrompt, [
   "Use using-jt-harness for this engineering task.",
 ]);
 assert.equal(fallback.skills, "./skills/");
+assert.equal(cursorPlugin.name, plugin.name);
+assert.equal(cursorPlugin.skills, "./skills/");
+assert.equal(cursorMarketplace.name, "jurislm-jt-harness");
+assert.equal(cursorMarketplace.owner.name, "JurisLM");
+assert.deepEqual(cursorMarketplace.plugins.map(({ name, source }) => ({ name, source })), [
+  { name: plugin.name, source: "." },
+]);
 assert.equal(Object.hasOwn(fallback, "mcpServers"), false);
 assert.equal(Object.hasOwn(fallback, "apps"), false);
 assert.equal(Object.hasOwn(plugin.extensions["com.openai"], "apps"), false);
