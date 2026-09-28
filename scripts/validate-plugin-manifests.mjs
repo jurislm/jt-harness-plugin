@@ -32,6 +32,7 @@ assert.deepEqual(plugin.extensions["com.openai"].interface.defaultPrompt, [
 ]);
 assert.equal(fallback.skills, "./skills/");
 assert.equal(cursorPlugin.name, plugin.name);
+assert.equal(cursorPlugin.displayName, "JT Harness Plugin");
 assert.equal(cursorPlugin.skills, "./skills/");
 assert.equal(cursorMarketplace.name, "jurislm-jt-harness");
 assert.equal(cursorMarketplace.owner.name, "JurisLM");
