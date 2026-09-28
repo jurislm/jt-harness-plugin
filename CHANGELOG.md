@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/jurislm/jt-harness-plugin/compare/v2.0.2...v2.1.0) (2026-09-28)
+
+
+### 🚀 New Features
+
+* support Cursor marketplace import ([#17](https://github.com/jurislm/jt-harness-plugin/issues/17)) ([8c4a296](https://github.com/jurislm/jt-harness-plugin/commit/8c4a296330f793427f37589241298a0c957c1c00))
+
 ## [2.0.2](https://github.com/jurislm/jt-harness-plugin/compare/v2.0.1...v2.0.2) (2026-09-25)
 
 
