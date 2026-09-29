@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/jurislm/jt-harness-plugin/compare/v2.1.1...v2.2.0) (2026-09-29)
+
+
+### 🚀 New Features
+
+* add JT Harness plugin icon metadata ([#21](https://github.com/jurislm/jt-harness-plugin/issues/21)) ([66ef883](https://github.com/jurislm/jt-harness-plugin/commit/66ef88362f14866de4249cb95b7e18c83377c252))
+
 ## [2.1.1](https://github.com/jurislm/jt-harness-plugin/compare/v2.1.0...v2.1.1) (2026-09-28)
 
 
