@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.2](https://github.com/jurislm/jt-harness-plugin/compare/v2.2.1...v2.2.2) (2026-09-29)
+
+
+### 📚 Documentation
+
+* **site:** add bilingual JT Harness GitHub Pages site ([#25](https://github.com/jurislm/jt-harness-plugin/issues/25)) ([b2ea4ba](https://github.com/jurislm/jt-harness-plugin/commit/b2ea4bac2cd59f0bc105c07cb85ea48afc6ac995))
+
 ## [2.2.1](https://github.com/jurislm/jt-harness-plugin/compare/v2.2.0...v2.2.1) (2026-09-29)
 
 
