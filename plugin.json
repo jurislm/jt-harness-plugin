@@ -9,7 +9,7 @@
   },
   "homepage": "https://jurislm.github.io/jt-harness-plugin/",
   "repository": "https://github.com/jurislm/jt-harness-plugin",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "keywords": [
     "guidance",
     "linear",

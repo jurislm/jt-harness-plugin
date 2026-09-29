@@ -7,7 +7,7 @@
     "url": "https://github.com/jurislm"
   },
   "repository": "https://github.com/jurislm/jt-harness-plugin",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "skills": "./skills/",
   "interface": {
     "displayName": "JT Harness Plugin",

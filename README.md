@@ -25,4 +25,4 @@ codex plugin add jt-harness-plugin@jurislm-jt-harness
 
 ## License
 
-UNLICENSED
+本 Plugin 採用 [MIT License](LICENSE)。
