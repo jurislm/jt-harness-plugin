@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="JT Harness Plugin 為 Codex 與 Cursor 提供自動套用的工程交付規則。">
+    <meta property="og:title" content="JT Harness Plugin — JurisLM">
+    <meta property="og:description" content="讓每個工程任務都有清楚的交付路徑。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jurislm.github.io/jt-harness-plugin/">
+    <title>JT Harness Plugin — JurisLM</title>
+    <link rel="canonical" href="https://jurislm.github.io/jt-harness-plugin/">
+    <link rel="alternate" hreflang="en" href="https://jurislm.github.io/jt-harness-plugin/en/">
+    <link rel="icon" href="assets/jt-harness.png">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主要內容</a>
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="JT Harness Plugin 首頁">
+        <img src="assets/jt-harness.png" alt="" width="44" height="44">
+        <span>JurisLM <span class="brand-divider">/</span> JT Harness</span>
+      </a>
+      <nav class="site-nav" aria-label="主選單">
+        <a href="#features">功能</a>
+        <a href="#install">安裝</a>
+        <a href="#scope">適用範圍</a>
+        <a class="language-link" href="en/" lang="en">EN</a>
+        <a class="nav-cta" href="https://github.com/jurislm/jt-harness-plugin">GitHub <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-mark"></span> 給工程工作的交付指南</p>
+          <h1>讓每個工程任務，<br>都有清楚的交付路徑。</h1>
+          <p class="hero-lead">JT Harness Plugin 為 Codex 與 Cursor 提供自動套用的工程交付 Skill，從開始追蹤到審查與合併，都有一致的規則。</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#install">開始安裝 <span aria-hidden="true">↓</span></a>
+            <a class="button button-secondary" href="https://github.com/jurislm/jt-harness-plugin">檢視原始碼 <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="hero-meta">
+            <span>CODEX</span>
+            <span>CURSOR</span>
+            <span>MAINTAINED BY JURISLM</span>
+          </div>
+        </div>
+        <aside class="flow-card" aria-label="交付流程摘要">
+          <div class="flow-card-head">
+            <span>DELIVERY FLOW</span>
+            <span class="flow-badge">ONE SKILL</span>
+          </div>
+          <ol class="flow-list">
+            <li>
+              <span class="flow-number">01</span>
+              <div><strong>追蹤工作</strong><p>在 Linear 找到或建立對應 issue</p></div>
+            </li>
+            <li>
+              <span class="flow-number">02</span>
+              <div><strong>套用平台規則</strong><p>Coolify 與 Hetzner 工作交給對應 Skill</p></div>
+            </li>
+            <li>
+              <span class="flow-number">03</span>
+              <div><strong>審查後再合併</strong><p>處理審查意見，確認檢查與合併條件</p></div>
+            </li>
+          </ol>
+          <div class="flow-card-foot"><span class="status-dot"></span> 從 issue 開始，完成驗證後交付</div>
+        </aside>
+      </section>
+
+      <section class="content-section" id="features">
+        <div class="section-kicker">WHAT IT DOES <span>01 — 03</span></div>
+        <div class="section-content">
+          <div class="section-heading">
+            <h2>一致的交付規則，<br>隨工程任務啟動。</h2>
+            <p>當 Agent 開始開發、修 Bug、審查、處理 PR 或部署時，JT Harness 會提供精簡的交付政策，讓團隊能依同一套規則追蹤與驗收。</p>
+          </div>
+          <div class="feature-grid">
+            <article class="feature-card">
+              <span class="feature-index">01 / TRACK</span>
+              <h3>任務有跡可循</h3>
+              <p>先在 Linear 對應 issue；完成後記錄結果、PR、審查、檢查與合併狀態。</p>
+            </article>
+            <article class="feature-card">
+              <span class="feature-index">02 / ROUTE</span>
+              <h3>工具各司其職</h3>
+              <p>Coolify 資源使用 Coolify Skill；Hetzner Cloud 與 Storage Box 使用 Hetzner Skill。</p>
+            </article>
+            <article class="feature-card">
+              <span class="feature-index">03 / REVIEW</span>
+              <h3>通過審查門檻</h3>
+              <p>各完成一次 Codex 與 CodeRabbit 審查，處理發現並確認必要檢查後才合併。</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="install-section" id="install">
+        <div class="section-kicker">GET STARTED <span>INSTALL</span></div>
+        <div class="install-heading">
+          <h2>選擇你的工作環境。</h2>
+          <p>從官方 GitHub 儲存庫安裝。版本透過 GitHub Releases 發布。</p>
+        </div>
+        <div class="install-grid">
+          <article class="install-card">
+            <div class="install-card-top">
+              <span class="platform-label">01 / CODEX</span>
+              <span class="platform-name">Codex</span>
+            </div>
+            <p>在終端機加入 JurisLM marketplace，並安裝插件：</p>
+            <pre><code>codex plugin marketplace add https://github.com/jurislm/jt-harness-plugin --ref main
+codex plugin add jt-harness-plugin@jurislm-jt-harness</code></pre>
+            <p class="install-note">安裝或更新後，開啟新的 Codex session 以載入 Skill。</p>
+          </article>
+          <article class="install-card">
+            <div class="install-card-top">
+              <span class="platform-label">02 / CURSOR</span>
+              <span class="platform-name">Cursor</span>
+            </div>
+            <ol class="cursor-steps">
+              <li>開啟 <strong>Customize → Plugins</strong>。</li>
+              <li>選擇 <strong>From GitHub Repository</strong>。</li>
+              <li>輸入 <code>https://github.com/jurislm/jt-harness-plugin</code> 並安裝 <code>jt-harness-plugin</code>。</li>
+            </ol>
+            <p class="install-note">更新後重新載入 Cursor，並確認 <code>using-jt-harness</code> Skill 已出現。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="scope-section" id="scope">
+        <div class="section-kicker">SCOPE <span>WHAT IT IS</span></div>
+        <div class="scope-content">
+          <div>
+            <h2>這是一個 Skill，<br>不是另一套服務。</h2>
+            <p>JT Harness 提供自動載入的交付規則；具體工程方法交由對應的 Superpowers Skill 執行。</p>
+          </div>
+          <ul class="scope-list">
+            <li><span>✓</span> Codex 與 Cursor 的工程交付政策</li>
+            <li><span>✓</span> Linear 追蹤、平台 Skill 路由、審查與合併規則</li>
+            <li><span>—</span> 不包含 MCP server、slash command、OAuth 或 hosted endpoint</li>
+            <li><span>—</span> 不發布 npm package；版本透過 GitHub Releases 發布</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="release-banner">
+        <div>
+          <p class="eyebrow">READY WHEN YOU ARE</p>
+          <h2>把交付規則帶進下一個工程任務。</h2>
+        </div>
+        <a class="button button-primary" href="https://github.com/jurislm/jt-harness-plugin/releases/latest">查看最新 Release <span aria-hidden="true">↗</span></a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="footer-brand" href="./">JT HARNESS <span>BY JURISLM</span></a>
+      <nav aria-label="相關連結">
+        <a href="https://github.com/jurislm/jt-harness-plugin">原始碼</a>
+        <a href="https://github.com/jurislm/jt-harness-plugin/releases">Releases</a>
+        <a href="https://github.com/jurislm/jt-harness-plugin/blob/main/CHANGELOG.md">Changelog</a>
+        <a href="https://github.com/jurislm/jt-harness-plugin/blob/main/README.md">README</a>
+      </nav>
+      <p>© JurisLM · Engineering delivery guidance</p>
+    </footer>
+  </body>
+</html>

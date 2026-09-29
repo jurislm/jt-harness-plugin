@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="JT Harness Plugin provides automatically invoked engineering delivery rules for Codex and Cursor.">
+    <meta property="og:title" content="JT Harness Plugin — JurisLM">
+    <meta property="og:description" content="A clear delivery path for every engineering task.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jurislm.github.io/jt-harness-plugin/en/">
+    <title>JT Harness Plugin — JurisLM</title>
+    <link rel="canonical" href="https://jurislm.github.io/jt-harness-plugin/en/">
+    <link rel="alternate" hreflang="zh-Hant" href="https://jurislm.github.io/jt-harness-plugin/">
+    <link rel="icon" href="../assets/jt-harness.png">
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <header class="site-header">
+      <a class="brand" href="../" aria-label="JT Harness Plugin home">
+        <img src="../assets/jt-harness.png" alt="" width="44" height="44">
+        <span>JurisLM <span class="brand-divider">/</span> JT Harness</span>
+      </a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <a href="#features">Features</a>
+        <a href="#install">Install</a>
+        <a href="#scope">Scope</a>
+        <a class="language-link" href="../" lang="zh-Hant">繁中</a>
+        <a class="nav-cta" href="https://github.com/jurislm/jt-harness-plugin">GitHub <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-mark"></span> A delivery guide for engineering work</p>
+          <h1>A clear delivery path<br>for engineering tasks.</h1>
+          <p class="hero-lead">JT Harness Plugin provides an automatically invoked engineering delivery Skill for Codex and Cursor, with shared rules for tracking, review, and merge.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#install">Install the plugin <span aria-hidden="true">↓</span></a>
+            <a class="button button-secondary" href="https://github.com/jurislm/jt-harness-plugin">View source <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="hero-meta">
+            <span>CODEX</span>
+            <span>CURSOR</span>
+            <span>MAINTAINED BY JURISLM</span>
+          </div>
+        </div>
+        <aside class="flow-card" aria-label="Delivery flow summary">
+          <div class="flow-card-head">
+            <span>DELIVERY FLOW</span>
+            <span class="flow-badge">ONE SKILL</span>
+          </div>
+          <ol class="flow-list">
+            <li>
+              <span class="flow-number">01</span>
+              <div><strong>Track the work</strong><p>Find or create the matching Linear issue</p></div>
+            </li>
+            <li>
+              <span class="flow-number">02</span>
+              <div><strong>Route platform work</strong><p>Use the right Skill for Coolify and Hetzner</p></div>
+            </li>
+            <li>
+              <span class="flow-number">03</span>
+              <div><strong>Review before merge</strong><p>Resolve findings and confirm merge gates</p></div>
+            </li>
+          </ol>
+          <div class="flow-card-foot"><span class="status-dot"></span> Start with an issue. Deliver after verification.</div>
+        </aside>
+      </section>
+
+      <section class="content-section" id="features">
+        <div class="section-kicker">WHAT IT DOES <span>01 — 03</span></div>
+        <div class="section-content">
+          <div class="section-heading">
+            <h2>Consistent delivery rules,<br>ready when work begins.</h2>
+            <p>When an agent starts development, fixes a bug, reviews code, works on a pull request, or deploys, JT Harness supplies concise delivery policies for tracking and acceptance.</p>
+          </div>
+          <div class="feature-grid">
+            <article class="feature-card">
+              <span class="feature-index">01 / TRACK</span>
+              <h3>Keep work traceable</h3>
+              <p>Find or create the Linear issue first. Record the outcome, pull request, reviews, checks, and merge status when finished.</p>
+            </article>
+            <article class="feature-card">
+              <span class="feature-index">02 / ROUTE</span>
+              <h3>Use the right tools</h3>
+              <p>Use the Coolify Skill for Coolify resources, and the Hetzner Skill for Hetzner Cloud and Storage Box.</p>
+            </article>
+            <article class="feature-card">
+              <span class="feature-index">03 / REVIEW</span>
+              <h3>Clear review gates</h3>
+              <p>Complete one Codex and one CodeRabbit review, resolve findings, and confirm required checks before merging.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="install-section" id="install">
+        <div class="section-kicker">GET STARTED <span>INSTALL</span></div>
+        <div class="install-heading">
+          <h2>Choose your workspace.</h2>
+          <p>Install from the official GitHub repository. Releases are published on GitHub.</p>
+        </div>
+        <div class="install-grid">
+          <article class="install-card">
+            <div class="install-card-top">
+              <span class="platform-label">01 / CODEX</span>
+              <span class="platform-name">Codex</span>
+            </div>
+            <p>Add the JurisLM marketplace and install the plugin from your terminal:</p>
+            <pre><code>codex plugin marketplace add https://github.com/jurislm/jt-harness-plugin --ref main
+codex plugin add jt-harness-plugin@jurislm-jt-harness</code></pre>
+            <p class="install-note">After installing or updating, start a new Codex session to load the Skill.</p>
+          </article>
+          <article class="install-card">
+            <div class="install-card-top">
+              <span class="platform-label">02 / CURSOR</span>
+              <span class="platform-name">Cursor</span>
+            </div>
+            <ol class="cursor-steps">
+              <li>Open <strong>Customize → Plugins</strong>.</li>
+              <li>Choose <strong>From GitHub Repository</strong>.</li>
+              <li>Enter <code>https://github.com/jurislm/jt-harness-plugin</code> and install <code>jt-harness-plugin</code>.</li>
+            </ol>
+            <p class="install-note">After updating, reload Cursor and confirm the <code>using-jt-harness</code> Skill appears.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="scope-section" id="scope">
+        <div class="section-kicker">SCOPE <span>WHAT IT IS</span></div>
+        <div class="scope-content">
+          <div>
+            <h2>A Skill, not<br>another service.</h2>
+            <p>JT Harness provides automatically loaded delivery rules. The relevant Superpowers Skill handles the engineering method.</p>
+          </div>
+          <ul class="scope-list">
+            <li><span>✓</span> Engineering delivery policies for Codex and Cursor</li>
+            <li><span>✓</span> Linear tracking, platform Skill routing, review and merge rules</li>
+            <li><span>—</span> No MCP server, slash commands, OAuth, or hosted endpoint</li>
+            <li><span>—</span> No npm package; releases are published on GitHub</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="release-banner">
+        <div>
+          <p class="eyebrow">READY WHEN YOU ARE</p>
+          <h2>Bring delivery rules to your next engineering task.</h2>
+        </div>
+        <a class="button button-primary" href="https://github.com/jurislm/jt-harness-plugin/releases/latest">View latest release <span aria-hidden="true">↗</span></a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="footer-brand" href="../">JT HARNESS <span>BY JURISLM</span></a>
+      <nav aria-label="Related links">
+        <a href="https://github.com/jurislm/jt-harness-plugin">Source</a>
+        <a href="https://github.com/jurislm/jt-harness-plugin/releases">Releases</a>
+        <a href="https://github.com/jurislm/jt-harness-plugin/blob/main/CHANGELOG.md">Changelog</a>
+        <a href="https://github.com/jurislm/jt-harness-plugin/blob/main/README.md">README</a>
+      </nav>
+      <p>© JurisLM · Engineering delivery guidance</p>
+    </footer>
+  </body>
+</html>

@@ -22,6 +22,6 @@
     "defaultPrompt": "Use using-jt-harness for this engineering task.",
     "composerIcon": "./assets/jt-harness.png",
     "logo": "./assets/jt-harness.png",
-    "websiteURL": "https://github.com/jurislm/jt-harness-plugin"
+    "websiteURL": "https://jurislm.github.io/jt-harness-plugin/"
   }
 }
