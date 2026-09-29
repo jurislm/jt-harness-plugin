@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.1](https://github.com/jurislm/jt-harness-plugin/compare/v2.2.0...v2.2.1) (2026-09-29)
+
+
+### 📚 Documentation
+
+* **plugin:** clarify README and agent guidance ([5592d69](https://github.com/jurislm/jt-harness-plugin/commit/5592d692314870e415b294c2fa73d6c55c907aa6))
+* **plugin:** clarify README and agent guidance ([5592d69](https://github.com/jurislm/jt-harness-plugin/commit/5592d692314870e415b294c2fa73d6c55c907aa6))
+
 ## [2.2.0](https://github.com/jurislm/jt-harness-plugin/compare/v2.1.1...v2.2.0) (2026-09-29)
 
 
