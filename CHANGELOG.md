@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.3](https://github.com/jurislm/jt-harness-plugin/compare/v2.2.2...v2.2.3) (2026-09-29)
+
+
+### 📚 Documentation
+
+* **site:** refine official website copy ([#27](https://github.com/jurislm/jt-harness-plugin/issues/27)) ([ef82602](https://github.com/jurislm/jt-harness-plugin/commit/ef82602fa3d469333310aa1ff4e08eb55d18d74c))
+
 ## [2.2.2](https://github.com/jurislm/jt-harness-plugin/compare/v2.2.1...v2.2.2) (2026-09-29)
 
 
