@@ -7,7 +7,7 @@
     "name": "Terry Chen",
     "url": "https://github.com/jurislm"
   },
-  "homepage": "https://github.com/jurislm/jt-harness-plugin",
+  "homepage": "https://jurislm.github.io/jt-harness-plugin/",
   "repository": "https://github.com/jurislm/jt-harness-plugin",
   "license": "UNLICENSED",
   "keywords": [
@@ -36,7 +36,7 @@
         ],
         "composerIcon": "./assets/jt-harness.png",
         "logo": "./assets/jt-harness.png",
-        "websiteURL": "https://github.com/jurislm/jt-harness-plugin"
+        "websiteURL": "https://jurislm.github.io/jt-harness-plugin/"
       }
     }
   }
