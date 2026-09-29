@@ -83,7 +83,7 @@ a:focus-visible {
 
 .brand-divider {
   padding: 0 4px;
-  color: #98a1ae;
+  color: #58677a;
   font-weight: 400;
 }
 
@@ -236,7 +236,7 @@ h1 {
   flex-wrap: wrap;
   gap: 18px;
   margin-top: 38px;
-  color: #788396;
+  color: #58677a;
   font-size: 9px;
 }
 
@@ -337,11 +337,11 @@ h1 {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 46px;
-  color: #8b7444;
+  color: #755d2e;
 }
 
 .section-kicker span {
-  color: #8d97a5;
+  color: #58677a;
 }
 
 .section-content {
@@ -393,7 +393,7 @@ h1 {
 }
 
 .feature-index {
-  color: #9a814b;
+  color: #755d2e;
   font-size: 9px;
 }
 
@@ -449,7 +449,7 @@ h1 {
 }
 
 .platform-label {
-  color: #9a814b;
+  color: #755d2e;
   font-size: 9px;
 }
 
@@ -499,7 +499,7 @@ pre code,
 }
 
 .cursor-steps li::marker {
-  color: #9a814b;
+  color: #755d2e;
   font-weight: 750;
 }
 
@@ -560,7 +560,7 @@ pre code,
 }
 
 .scope-list li span {
-  color: #92783f;
+  color: #755d2e;
   font-weight: 800;
 }
 
@@ -600,7 +600,7 @@ pre code,
 
 .footer-brand span {
   margin-left: 6px;
-  color: #8792a2;
+  color: #58677a;
   font-size: 8px;
 }
 
@@ -614,7 +614,7 @@ pre code,
 
 .site-footer p {
   margin: 0;
-  color: #8792a2;
+  color: #58677a;
   font-size: 10px;
 }
 
