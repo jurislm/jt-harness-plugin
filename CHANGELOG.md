@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.4](https://github.com/jurislm/jt-harness-plugin/compare/v2.2.3...v2.2.4) (2026-09-29)
+
+
+### 📚 Documentation
+
+* **license:** adopt MIT license ([#29](https://github.com/jurislm/jt-harness-plugin/issues/29)) ([b25a727](https://github.com/jurislm/jt-harness-plugin/commit/b25a7279ede33efe4e49a3a4c36484b8fcb46796))
+
 ## [2.2.3](https://github.com/jurislm/jt-harness-plugin/compare/v2.2.2...v2.2.3) (2026-09-29)
 
 
