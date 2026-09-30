@@ -1,6 +1,6 @@
 {
   "name": "jt-harness-plugin",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "private": true,
   "description": "JurisLM's automatically invoked engineering rules for Codex.",
   "license": "MIT",
