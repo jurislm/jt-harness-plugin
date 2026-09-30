@@ -1,6 +1,6 @@
 {
   "name": "jt-harness-plugin",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "Codex compatibility metadata for JT Harness engineering rules.",
   "author": {
     "name": "Terry Chen",

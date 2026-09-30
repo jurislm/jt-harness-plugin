@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.5](https://github.com/jurislm/jt-harness-plugin/compare/v2.2.4...v2.2.5) (2026-09-30)
+
+
+### 🐛 Bug Fixes
+
+* unify review and merge policy ([#31](https://github.com/jurislm/jt-harness-plugin/issues/31)) ([8056029](https://github.com/jurislm/jt-harness-plugin/commit/805602969e32c5ebf1194a571b9e60c598261c19))
+
 ## [2.2.4](https://github.com/jurislm/jt-harness-plugin/compare/v2.2.3...v2.2.4) (2026-09-29)
 
 
