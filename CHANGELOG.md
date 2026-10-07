@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.6](https://github.com/jurislm/jt-harness-plugin/compare/v2.2.5...v2.2.6) (2026-10-07)
+
+
+### 🐛 Bug Fixes
+
+* pass Codex review gate on quota limits ([#33](https://github.com/jurislm/jt-harness-plugin/issues/33)) ([ed219fe](https://github.com/jurislm/jt-harness-plugin/commit/ed219fe19f453e085563d72f792f8f09e2cecbf6))
+
 ## [2.2.5](https://github.com/jurislm/jt-harness-plugin/compare/v2.2.4...v2.2.5) (2026-09-30)
 
 
