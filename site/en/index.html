@@ -90,7 +90,7 @@
             <article class="feature-card">
               <span class="feature-index">03 / REVIEW</span>
               <h3>Clear review gates</h3>
-              <p>Complete one full review each with Codex and CodeRabbit. Resolve findings and verify fixes without further full or incremental reviews. Local full-project lint must pass, including existing main failures. Once current-head required checks pass and GitHub reports the PR mergeable, merge directly without additional human approval or plugin-specific gates. Mark delivery drafts ready first. If both CodeRabbit routes are limited, rely on the completed Codex review. Record actual GitHub blockers without bypassing platform restrictions. Do not merge review-only or explicitly no-merge work.</p>
+              <p>Use one full review each with Codex and CodeRabbit. If a Codex review is blocked by an explicitly reported usage or quota limit, record the evidence and mark its review requirement as Pass without retrying or requesting a replacement. Other Codex failures or missing results leave the requirement unmet. Resolve findings and verify fixes without further full or incremental reviews. Local full-project lint must pass, including existing main failures. Once current-head required checks pass and GitHub reports the PR mergeable, merge directly without additional human approval or plugin-specific gates. Mark delivery drafts ready first. If both CodeRabbit routes are limited, rely on the satisfied Codex review requirement, including a documented quota-limit Pass. Record actual GitHub blockers without bypassing platform restrictions. Do not merge review-only or explicitly no-merge work.</p>
             </article>
           </div>
         </div>
