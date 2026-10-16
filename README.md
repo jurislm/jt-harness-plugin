@@ -1,6 +1,6 @@
 # JT Harness Plugin
 
-JurisLM 的 Codex／Cursor Plugin，包含一個軟體工程交付 Skill：[`using-jt-harness`](skills/using-jt-harness/SKILL.md)。Skill 內容涵蓋 Linear 追蹤、平台插件路由、審查與合併規則。完整規則以 Skill 為準。
+JurisLM 的 Codex／Cursor Plugin，包含唯一的軟體工程交付 Skill：[`using-jt-harness`](skills/using-jt-harness/SKILL.md)。若目前主機已安裝，工程方法優先使用官方 [Pstack](https://github.com/cursor/plugins/tree/main/pstack)；JT 保持交付政策的唯一來源，不複製另一套方法框架。
 
 官方網站：[JT Harness Plugin](https://jurislm.github.io/jt-harness-plugin/)
 
