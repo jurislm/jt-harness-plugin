@@ -6,6 +6,13 @@ const repositoryRoot = new URL("../", import.meta.url);
 const skillsDir = new URL("skills/", repositoryRoot);
 const skill = readFileSync(new URL("using-jt-harness/SKILL.md", skillsDir), "utf8");
 const frontmatter = skill.match(/^---\n([\s\S]*?)\n---/);
+const activePolicyFiles = [
+  "skills/using-jt-harness/SKILL.md",
+  "plugin.json",
+  "README.md",
+  "site/index.html",
+  "site/en/index.html",
+];
 const retiredSkillIds = [
   "engineering-delivery",
   "delivery-preflight",
@@ -26,6 +33,25 @@ test("JT Harness 只暴露一个自动触发的规则 Skill", () => {
   assert.match(frontmatter[1], /^name: using-jt-harness$/m);
   assert.match(frontmatter[1], /Use when starting any software engineering task/);
   assert.doesNotMatch(frontmatter[1], /disable-model-invocation:\s*true/);
+});
+
+test("Pstack is preferred without an external skill hard dependency", () => {
+  const retiredProviderName = ["super", "powers"].join("");
+  for (const path of activePolicyFiles) {
+    const source = readFileSync(new URL(path, repositoryRoot), "utf8").toLowerCase();
+    assert.ok(!source.includes(retiredProviderName), `${path} still requires the retired method provider`);
+  }
+
+  for (const rule of [
+    "When the official Pstack plugin is available on the current host, prefer it for engineering methods",
+    "Use only capabilities exposed by the current host",
+    "Confirm it fails for the intended reason",
+    "git worktree add",
+    "main/root checkout read-only",
+    "Do not add comments to code, tests, scripts, or configuration",
+  ]) {
+    assert.ok(skill.includes(rule), `SKILL.md 缺少「${rule}」`);
+  }
 });
 
 test("已退役的 Skill 名称不残留在入口或 marketplace metadata", () => {
@@ -61,8 +87,8 @@ test("JT Harness 规定 Linear 更新和平台插件路由", () => {
 
 test("JT Harness 规定一次审查、CodeRabbit 退路和自动合并条件", () => {
   for (const rule of [
-    "superpowers:requesting-code-review",
-    "superpowers:receiving-code-review",
+    "Obtain one complete Codex review",
+    "Assess review findings directly",
     "one complete Codex review",
     "wait for it to finish and return a result",
     "one CodeRabbit review",
