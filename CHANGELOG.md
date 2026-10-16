@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.3.0](https://github.com/jurislm/jt-harness-plugin/compare/v2.2.6...v2.3.0) (2026-10-16)
+
+
+### 🚀 New Features
+
+* prefer Pstack for engineering methods ([7ccb9fc](https://github.com/jurislm/jt-harness-plugin/commit/7ccb9fc92e2fe6469499586c7bf2f7aac7adca16))
+* prefer Pstack for engineering methods ([f599577](https://github.com/jurislm/jt-harness-plugin/commit/f599577dcf9ce5a940ea933d6c4f1fcfb6ca9ad1))
+
 ## [2.2.6](https://github.com/jurislm/jt-harness-plugin/compare/v2.2.5...v2.2.6) (2026-10-07)
 
 
