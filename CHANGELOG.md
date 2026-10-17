@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.3.1](https://github.com/jurislm/jt-harness-plugin/compare/v2.3.0...v2.3.1) (2026-10-17)
+
+
+### 📚 Documentation
+
+* clarify main checkout update policy ([945ae6b](https://github.com/jurislm/jt-harness-plugin/commit/945ae6b2e093d8ff863a0ab6b7d0f245fdea8e33))
+* clarify main checkout update policy ([41df90f](https://github.com/jurislm/jt-harness-plugin/commit/41df90fa243cd544c20b4acfa3b46ec8d630e1c7))
+
 ## [2.3.0](https://github.com/jurislm/jt-harness-plugin/compare/v2.2.6...v2.3.0) (2026-10-16)
 
 
