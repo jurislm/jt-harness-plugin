@@ -480,7 +480,6 @@ export async function runReleasePrAutoMerge({
     if (relation !== "behind") {
       throw new Error(`release PR base SHA does not match the triggering Woodpecker commit (relation=${relation})`);
     }
-    // Release Please 回報 "PR remained the same" 時不會推 release 分支，PR base 就停在舊的 main。
     await request(`/repos/${REPOSITORY}/pulls/${candidate.number}/update-branch`, {
       method: "PUT",
       body: JSON.stringify({ expected_head_sha: candidate.headSha }),
