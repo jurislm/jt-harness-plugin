@@ -439,15 +439,16 @@ export async function runReleasePrAutoMerge({
   const request = createGitHubClient({ token, fetchImpl, requestTimeoutMs: timeoutMs });
   const readMainBranchSha = async () =>
     mainBranchSha(await request(`/repos/${REPOSITORY}/git/ref/heads/${BASE_BRANCH}`));
-  const candidateBaseIsNewer = async (baseSha) => {
+  const baseRelation = async (baseSha) => {
     const comparison = requiredRecord(
       await request(
         `/repos/${REPOSITORY}/compare/${encodeURIComponent(expectedCommitSha)}...${encodeURIComponent(baseSha)}?per_page=1`,
       ),
       "commit comparison",
     );
-    return requiredString(comparison.status, "commit comparison status") === "ahead";
+    return requiredString(comparison.status, "commit comparison status");
   };
+  const candidateBaseIsNewer = async (baseSha) => (await baseRelation(baseSha)) === "ahead";
   const query = new URLSearchParams({
     state: "open",
     base: BASE_BRANCH,
@@ -459,7 +460,7 @@ export async function runReleasePrAutoMerge({
   );
   if (!candidate) return { status: "no-op" };
 
-  const detailValue = await request(`/repos/${REPOSITORY}/pulls/${candidate.number}`);
+  let detailValue = await request(`/repos/${REPOSITORY}/pulls/${candidate.number}`);
   const detailedCandidate = selectReleaseCandidate([detailValue]);
   if (!detailedCandidate || detailedCandidate.number !== candidate.number) {
     throw new Error("release PR candidate changed before validation");
@@ -474,10 +475,37 @@ export async function runReleasePrAutoMerge({
   candidate = detailedCandidate;
 
   if (candidate.baseSha !== expectedCommitSha) {
-    if (await candidateBaseIsNewer(candidate.baseSha)) {
-      return { status: "no-op" };
+    const relation = await baseRelation(candidate.baseSha);
+    if (relation === "ahead") return { status: "no-op" };
+    if (relation !== "behind") {
+      throw new Error(`release PR base SHA does not match the triggering Woodpecker commit (relation=${relation})`);
     }
-    throw new Error("release PR base SHA does not match the triggering Woodpecker commit");
+    // Release Please 回報 "PR remained the same" 時不會推 release 分支，PR base 就停在舊的 main。
+    await request(`/repos/${REPOSITORY}/pulls/${candidate.number}/update-branch`, {
+      method: "PUT",
+      body: JSON.stringify({ expected_head_sha: candidate.headSha }),
+    });
+    let updatedValue = null;
+    let updated = null;
+    for (let attempt = 1; attempt <= MAX_MERGEABLE_ATTEMPTS && !updated; attempt += 1) {
+      if (attempt > 1) await sleep(MERGEABLE_POLL_DELAY_MS);
+      const value = await request(`/repos/${REPOSITORY}/pulls/${candidate.number}`);
+      const current = selectReleaseCandidate([value]);
+      if (!current || current.number !== candidate.number || current.title !== candidate.title) {
+        throw new Error("release PR changed during branch update");
+      }
+      if (current.headSha !== candidate.headSha) {
+        updatedValue = value;
+        updated = current;
+      }
+    }
+    if (!updated) throw new Error("release PR branch update did not produce a new head");
+    if (updated.baseSha !== expectedCommitSha) {
+      if ((await readMainBranchSha()) !== expectedCommitSha) return { status: "no-op" };
+      throw new Error("release PR base SHA does not match the triggering Woodpecker commit after branch update");
+    }
+    detailValue = updatedValue;
+    candidate = updated;
   }
 
   const changedFileCount = requiredRecord(detailValue, "pull request detail").changed_files;
