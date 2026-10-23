@@ -48,7 +48,7 @@ export function measureReview({ target, head = "HEAD", cwd = process.cwd(), limi
   const headId = resolve(head);
   const bases = git("merge-base", "--all", targetId, headId).toString().trim().split("\n");
   if (bases.length !== 1 || !bases[0]) throw new Error("A unique merge-base is required");
-  const diff = ["diff", "--no-ext-diff", "--no-textconv", "--no-color", "--find-renames=50%", "--ignore-submodules=none"];
+  const diff = ["diff", "--no-relative", "--no-ext-diff", "--no-textconv", "--no-color", "--find-renames=50%", "--ignore-submodules=none"];
   const range = [bases[0], headId, "--"];
   const coverage = parseNumstat(git(...diff, "--numstat", "-z", ...range).toString());
   const patch = git(...diff, "--patch", "--unified=3", ...range);

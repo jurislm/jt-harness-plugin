@@ -3,6 +3,7 @@ import { execFileSync, spawnSync } from "node:child_process";
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { assessSize, parseNumstat, measureReview } from "./review-size-gate.mjs";
 
@@ -38,11 +39,7 @@ test("NUL coverage preserves renames, deletes, whitespace, generated and binary 
   assert.throws(() => parseNumstat("1\t0\ttruncated"));
 });
 
-test("real Git range uses target merge-base and full history rather than final commit", (t) => {
-  if (spawnSync("git", ["rev-parse", "--verify", "HEAD~2"], { stdio: "pipe" }).status !== 0) {
-    t.skip("Requires two existing ancestors; fixture commits are intentionally not created");
-    return;
-  }
+test("real Git range uses target merge-base and full history rather than final commit", () => {
   const git = (...args) => execFileSync("git", args, { encoding: "utf8" }).trim();
   const head = git("rev-parse", "HEAD");
   const target = git("rev-parse", "HEAD~2");
@@ -58,6 +55,12 @@ test("real Git range uses target merge-base and full history rather than final c
   assert.equal(reverse.mergeBase, target);
   assert.equal(reverse.changedPaths, 0);
   assert.throws(() => measureReview({ target: "missing-review-target", head }));
+  const fromSubdirectory = spawnSync(process.execPath, [fileURLToPath(new URL("./review-size-gate.mjs", import.meta.url)), target, head], {
+    cwd: fileURLToPath(new URL("./", import.meta.url)),
+    env: { ...process.env, GIT_CONFIG_COUNT: "1", GIT_CONFIG_KEY_0: "diff.relative", GIT_CONFIG_VALUE_0: "true" },
+  });
+  assert.equal(fromSubdirectory.status, report.pass ? 0 : 1);
+  assert.deepEqual(JSON.parse(fromSubdirectory.stdout).coverage, report.coverage);
 });
 
 test("CLI requires an explicit target and fails closed on invalid refs", () => {

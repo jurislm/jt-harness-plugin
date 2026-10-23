@@ -38,7 +38,7 @@ codex plugin add jt-harness-plugin@jurislm-jt-harness
 commit、rebase 或 retarget 後須重跑；另需核對外部審查結果的 HEAD 與逐檔 coverage，此 script 不驗證外部審查狀態。
 
 `.github/workflows/review-size.yml` 提供 `pull_request` CI 入口，以事件的 base/head SHA 與完整歷史執行同一 gate，超標或計數失敗即使 job 失敗。
-workflow 合併且 GitHub Actions 啟用後才在遠端執行，涵蓋新 PR、更新 commit、重開與修改 target；目前只在本機實作並驗證。
+workflow 需存在於遠端事件版本且 GitHub Actions 已啟用才會執行，涵蓋新 PR、更新 commit、重開與修改 target；僅本機修改不會啟用遠端檢查。
 權限僅 `contents: read`，不使用 secrets 或 `pull_request_target`。此檢查未設為 required check，未修改 branch protection，不能保證禁止合併失敗的 PR。
 
 ## License
