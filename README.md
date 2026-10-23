@@ -21,7 +21,25 @@ codex plugin add jt-harness-plugin@jurislm-jt-harness
 
 ## 範圍
 
-本 Plugin 只提供 Skill，不提供 MCP server、slash commands、OAuth 或 hosted endpoint。版本透過 GitHub Release 發布，不發布 npm package。
+本 Plugin 提供單一交付政策 Skill 與本機 size gate script，不提供 MCP server、slash commands、OAuth 或 hosted endpoint。版本透過 GitHub Release 發布，不發布 npm package。
+
+## 本機 PR size gate
+
+在目標 repository 執行 `node /path/to/jt-harness-plugin/scripts/review-size-gate.mjs <實際PR目標ref> HEAD`。
+在本 plugin 目錄也可用 `npm run review:size -- <實際PR目標ref> HEAD`。
+輸出完整 JSON coverage，成功退出碼為 0，超過內部門檻為 1，無法可靠計數為 2。
+預設 20 changed paths、500 新增加刪除行、100 KiB 文字 patch；既有更嚴限制優先。
+可用第三參數 JSON 收緊門檻，例如 `'{"changedPaths":10}'`。超過門檻須按可驗收功能拆 PR。
+大小通過不代表審查通過，完整規則與官方來源見 Skill。
+
+本機入口需手動執行；`npm run validate` 執行 gate 與 CI 接線測試，未安裝 Git hook。
+計數只涵蓋已提交的 merge-base 至 HEAD，未提交、已 stage 但未 commit、未追蹤檔都不計入。
+下次交付時先核對 `git status` 並將預定範圍納入本機 commit，再以實際 PR target 執行 gate，通過後才首次 push。
+commit、rebase 或 retarget 後須重跑；另需核對外部審查結果的 HEAD 與逐檔 coverage，此 script 不驗證外部審查狀態。
+
+`.github/workflows/review-size.yml` 提供 `pull_request` CI 入口，以事件的 base/head SHA 與完整歷史執行同一 gate，超標或計數失敗即使 job 失敗。
+workflow 合併且 GitHub Actions 啟用後才在遠端執行，涵蓋新 PR、更新 commit、重開與修改 target；目前只在本機實作並驗證。
+權限僅 `contents: read`，不使用 secrets 或 `pull_request_target`。此檢查未設為 required check，未修改 branch protection，不能保證禁止合併失敗的 PR。
 
 ## License
 

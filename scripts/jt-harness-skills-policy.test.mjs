@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import test from "node:test";
+import { execFileSync, spawnSync } from "node:child_process";
 
 const repositoryRoot = new URL("../", import.meta.url);
 const skillsDir = new URL("skills/", repositoryRoot);
@@ -104,4 +105,42 @@ test("JT Harness 规定一次审查、CodeRabbit 退路和自动合并条件", (
   ]) {
     assert.ok(skill.includes(rule), `SKILL.md 缺少「${rule}」`);
   }
+});
+
+test("size policy distinguishes internal caps and fails incomplete reviews closed", () => {
+  for (const rule of [
+    "20 changed paths", "500 added plus deleted lines", "100 KiB (102400 bytes)",
+    "not vendor caps", "actual PR target merge-base to HEAD", "Splitting commits",
+    "Recompute after stack rebase", "preserve integration validation",
+    "150 for Free/Essentials", "300 for Team/Advanced/Enterprise", "100–300 for OSS",
+    "300 or more changed files", "Unpublished does not mean unlimited",
+    "Codex review requirement remains unmet", "CodeRabbit review requirement remains unmet",
+    "Require a complete result covering current HEAD", "quota-limited reviews never count as Pass",
+  ]) assert.ok(skill.includes(rule), `Missing policy: ${rule}`);
+  assert.doesNotMatch(skill, /quota-limit Pass|mark the Codex review requirement as Pass/);
+});
+
+test("PR workflow connects event SHAs to the gate and propagates failures", () => {
+  const workflow = readFileSync(new URL(".github/workflows/review-size.yml", repositoryRoot), "utf8");
+  for (const wiring of [
+    "pull_request:", "types: [opened, synchronize, reopened, edited, ready_for_review]",
+    "contents: read", "fetch-depth: 0", "persist-credentials: false",
+    "ref: ${{ github.event.pull_request.head.sha }}",
+    "PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}",
+    "PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}",
+  ]) assert.ok(workflow.includes(wiring), `Missing CI wiring: ${wiring}`);
+  assert.doesNotMatch(workflow, /pull_request_target|secrets\.|continue-on-error|paths:|write/);
+  const command = workflow.match(/^\s+run: (.+)$/m)?.[1];
+  assert.equal(command, 'node scripts/review-size-gate.mjs "$PR_BASE_SHA" "$PR_HEAD_SHA"');
+  const git = (...args) => execFileSync("git", args, { encoding: "utf8" }).trim();
+  const head = git("rev-parse", "HEAD");
+  const result = spawnSync("bash", ["-e", "-c", command], {
+    env: { ...process.env, PR_BASE_SHA: head, PR_HEAD_SHA: head },
+  });
+  assert.equal(result.status, 0);
+  assert.equal(JSON.parse(result.stdout).head, head);
+  const invalid = spawnSync("bash", ["-e", "-c", command], {
+    env: { ...process.env, PR_BASE_SHA: "missing-event-base", PR_HEAD_SHA: head },
+  });
+  assert.equal(invalid.status, 2);
 });

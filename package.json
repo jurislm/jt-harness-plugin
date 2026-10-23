@@ -11,7 +11,8 @@
     "test": "node --test scripts/*.test.mjs",
     "manifest:check": "node scripts/validate-plugin-manifests.mjs",
     "lint:md": "markdownlint README.md 'skills/*/SKILL.md'",
-    "validate": "npm run manifest:check && npm run test && npm run lint:md"
+    "validate": "npm run manifest:check && npm run test && npm run lint:md",
+    "review:size": "node scripts/review-size-gate.mjs"
   },
   "devDependencies": {
     "ajv": "8.20.0",
