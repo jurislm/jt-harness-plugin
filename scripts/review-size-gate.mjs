@@ -1,4 +1,7 @@
 import { spawnSync } from "node:child_process";
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
 export const defaultLimits = Object.freeze({ changedPaths: 20, changedLines: 500, patchBytes: 100 * 1024 });
@@ -36,12 +39,13 @@ export function parseNumstat(source) {
 }
 
 export function measureReview({ target, head = "HEAD", cwd = process.cwd(), limits = {} }) {
-  const git = (...args) => {
-    const result = spawnSync("git", args, { cwd, maxBuffer: 1024 * 1024 * 1024 });
+  const runGit = (directory, env, ...args) => {
+    const result = spawnSync("git", args, { cwd: directory, env, maxBuffer: 1024 * 1024 * 1024 });
     if (result.error) throw result.error;
     if (result.status !== 0) throw new Error(result.stderr.toString() || "Git measurement failed");
     return result.stdout;
   };
+  const git = (...args) => runGit(cwd, process.env, ...args);
   if (!target) throw new Error("Explicit PR target required");
   const resolve = (ref) => git("rev-parse", "--verify", "--end-of-options", `${ref}^{commit}`).toString().trim();
   const targetId = resolve(target);
@@ -50,14 +54,24 @@ export function measureReview({ target, head = "HEAD", cwd = process.cwd(), limi
   if (bases.length !== 1 || !bases[0]) throw new Error("A unique merge-base is required");
   const diff = ["diff", "--no-relative", "--no-ext-diff", "--no-textconv", "--no-color", "--find-renames=50%", "--ignore-submodules=none"];
   const range = [bases[0], headId, "--"];
-  const coverage = parseNumstat(git(...diff, "--numstat", "-z", ...range).toString());
-  const patch = git(...diff, "--patch", "--unified=3", ...range);
-  const metrics = {
-    changedPaths: coverage.length,
-    changedLines: coverage.reduce((sum, entry) => sum + (entry.additions ?? 0) + (entry.deletions ?? 0), 0),
-    patchBytes: patch.length,
-  };
-  return { target: targetId, head: headId, mergeBase: bases[0], ...metrics, coverage, ...assessSize(metrics, limits) };
+  const metadata = mkdtempSync(join(tmpdir(), "jt-size-metadata-"));
+  try {
+    const objects = git("rev-parse", "--path-format=absolute", "--git-path", "objects").toString().trim();
+    const format = git("rev-parse", "--show-object-format").toString().trim();
+    git("init", "--bare", "--quiet", "--template=", `--object-format=${format}`, metadata);
+    const measure = (...args) => runGit(metadata, { ...process.env, GIT_OBJECT_DIRECTORY: objects, GIT_ATTR_NOSYSTEM: "1" },
+      `--git-dir=${metadata}`, `--work-tree=${metadata}`, "-c", "core.attributesFile=/dev/null", ...diff, ...args, ...range);
+    const coverage = parseNumstat(measure("--numstat", "-z").toString());
+    const patch = measure("--patch", "--unified=3");
+    const metrics = {
+      changedPaths: coverage.length,
+      changedLines: coverage.reduce((sum, entry) => sum + (entry.additions ?? 0) + (entry.deletions ?? 0), 0),
+      patchBytes: patch.length,
+    };
+    return { target: targetId, head: headId, mergeBase: bases[0], ...metrics, coverage, ...assessSize(metrics, limits) };
+  } finally {
+    rmSync(metadata, { recursive: true, force: true });
+  }
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

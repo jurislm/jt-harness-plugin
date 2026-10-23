@@ -71,6 +71,24 @@ test("CLI requires an explicit target and fails closed on invalid refs", () => {
   }
 });
 
+test("working-tree attributes cannot disguise text changes as binary", () => {
+  const root = mkdtempSync(join(tmpdir(), "jt-attributes-"));
+  const git = (...args) => execFileSync("git", args, { encoding: "utf8" }).trim();
+  const target = git("rev-parse", "HEAD~2");
+  const head = git("rev-parse", "HEAD");
+  const expected = measureReview({ target, head });
+  try {
+    execFileSync("git", ["init", "--quiet", `--object-format=${git("rev-parse", "--show-object-format")}`, root]);
+    writeFileSync(join(root, ".git", "objects", "info", "alternates"), git("rev-parse", "--path-format=absolute", "--git-path", "objects") + "\n");
+    writeFileSync(join(root, ".gitattributes"), "* -diff\n");
+    const actual = measureReview({ target, head, cwd: root });
+    assert.ok(actual.changedLines > 0);
+    assert.deepEqual(actual, expected);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("committed HEAD measurement excludes an actual untracked file", () => {
   const root = mkdtempSync(join(process.cwd(), ".jt-untracked-size-test-"));
   try {
