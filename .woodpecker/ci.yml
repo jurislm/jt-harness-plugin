@@ -2,9 +2,16 @@ when:
   - event: push
   - event: pull_request
 
+clone:
+  git:
+    image: woodpeckerci/plugin-git
+    settings:
+      partial: false
+      depth: 0
+
 steps:
   validate:
-    image: node:22.22.2-bookworm-slim
+    image: node:22.22.2-bookworm
     commands:
       - npm ci
       - npm run validate
