@@ -7,10 +7,13 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { assessSize, parseNumstat, measureReview } from "./review-size-gate.mjs";
 
-test("internal limits accept equality and reject each exceeded dimension", () => {
+test("bounded dimensions stay enforced and line count requires separate review coverage", () => {
   const exact = { changedPaths: 20, changedLines: 500, patchBytes: 102400 };
   assert.equal(assessSize(exact).pass, true);
-  for (const dimension of Object.keys(exact)) {
+  assert.equal(assessSize({ ...exact, changedLines: 615 }).pass, true);
+  assert.equal(assessSize(exact).requiresCoverageVerification, true);
+  assert.deepEqual(assessSize({ ...exact, changedLines: 615 }, { changedLines: 500 }).exceeded, ["changedLines"]);
+  for (const dimension of ["changedPaths", "patchBytes"]) {
     assert.deepEqual(assessSize({ ...exact, [dimension]: exact[dimension] + 1 }).exceeded, [dimension]);
   }
 });

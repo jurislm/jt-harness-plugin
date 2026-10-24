@@ -4,21 +4,23 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
-export const defaultLimits = Object.freeze({ changedPaths: 20, changedLines: 500, patchBytes: 100 * 1024 });
+export const defaultLimits = Object.freeze({ changedPaths: 20, patchBytes: 100 * 1024 });
+
+const measurementKeys = ["changedPaths", "changedLines", "patchBytes"];
 
 export function assessSize(metrics, overrides = {}) {
   if (!overrides || typeof overrides !== "object" || Array.isArray(overrides)) throw new Error("Limits must be an object");
   for (const [key, value] of Object.entries(overrides)) {
-    if (!Object.hasOwn(defaultLimits, key) || !Number.isSafeInteger(value) || value < 1 || value > defaultLimits[key]) {
+    if (!measurementKeys.includes(key) || !Number.isSafeInteger(value) || value < 1 || (Object.hasOwn(defaultLimits, key) && value > defaultLimits[key])) {
       throw new Error(`Invalid stricter limit: ${key}`);
     }
   }
   const limits = { ...defaultLimits, ...overrides };
-  for (const key of Object.keys(limits)) {
+  for (const key of measurementKeys) {
     if (!Number.isSafeInteger(metrics[key]) || metrics[key] < 0) throw new Error(`Invalid measurement: ${key}`);
   }
   const exceeded = Object.keys(limits).filter((key) => metrics[key] > limits[key]);
-  return { limits, exceeded, pass: exceeded.length === 0 };
+  return { limits, exceeded, pass: exceeded.length === 0, requiresCoverageVerification: true };
 }
 
 export function parseNumstat(source) {

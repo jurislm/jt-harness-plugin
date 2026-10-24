@@ -109,7 +109,9 @@ test("JT Harness 规定一次审查、CodeRabbit 退路和自动合并条件", (
 
 test("size policy distinguishes internal caps and fails incomplete reviews closed", () => {
   for (const rule of [
-    "20 changed paths", "500 added plus deleted lines", "100 KiB (102400 bytes)",
+    "20 changed paths", "100 KiB (102400 bytes)",
+    "When a repository defines a line limit, compliance with that limit remains mandatory",
+    "If actual size causes a skipped or incomplete review",
     "not vendor caps", "actual PR target merge-base to HEAD", "Splitting commits",
     "Recompute after stack rebase", "preserve integration validation",
     "150 for Free/Essentials", "300 for Team/Advanced/Enterprise", "100–300 for OSS",
