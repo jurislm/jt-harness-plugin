@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.0](https://github.com/jurislm/jt-harness-plugin/compare/v2.3.1...v2.4.0) (2026-10-24)
+
+
+### 🚀 New Features
+
+* enforce bounded PR review size and coverage ([#40](https://github.com/jurislm/jt-harness-plugin/issues/40)) ([730fd0a](https://github.com/jurislm/jt-harness-plugin/commit/730fd0a427b840f1fdf948ed6bf4c4f66e3c084e))
+
 ## [2.3.1](https://github.com/jurislm/jt-harness-plugin/compare/v2.3.0...v2.3.1) (2026-10-17)
 
 
