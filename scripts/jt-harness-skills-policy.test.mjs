@@ -117,9 +117,23 @@ test("size policy distinguishes internal caps and fails incomplete reviews close
     "150 for Free/Essentials", "300 for Team/Advanced/Enterprise", "100–300 for OSS",
     "300 or more changed files", "Unpublished does not mean unlimited",
     "Codex review requirement remains unmet", "CodeRabbit review requirement remains unmet",
-    "Require a complete result covering current HEAD", "quota-limited reviews never count as Pass",
+    "Require complete initial review coverage of the submitted head", "quota-limited reviews never count as Pass",
   ]) assert.ok(skill.includes(rule), `Missing policy: ${rule}`);
   assert.doesNotMatch(skill, /quota-limit Pass|mark the Codex review requirement as Pass/);
+});
+
+test("one-review closure verifies original fixes without claiming a re-review", () => {
+  for (const rule of [
+    "After complete initial coverage, close original findings with per-finding fix or counterevidence",
+    "inspect the exact diff from each reviewed head to the delivery head",
+    "run necessary tests and required checks on the delivery head",
+    "Record each reviewer's actual reviewed SHA separately from the verified delivery SHA",
+    "do not claim external review of a newer head",
+    "Initially uncovered, skipped or unsupported scope remains unmet",
+    "Do not open a replacement PR to evade the per-package review count",
+    "New functionality outside the originally reviewed scope requires a separate package and its normal first reviews",
+  ]) assert.ok(skill.includes(rule), `Missing closure policy: ${rule}`);
+  assert.doesNotMatch(skill, /complete current-HEAD result|coverage for current HEAD|complete result covering current HEAD|If subsequent fixes leave that coverage unavailable/);
 });
 
 test("PR workflow connects event SHAs to the gate and propagates failures", () => {
