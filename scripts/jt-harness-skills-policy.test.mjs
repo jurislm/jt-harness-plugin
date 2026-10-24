@@ -122,6 +122,24 @@ test("size policy distinguishes internal caps and fails incomplete reviews close
   assert.doesNotMatch(skill, /quota-limit Pass|mark the Codex review requirement as Pass/);
 });
 
+test("published pages require initial coverage and distinguish verified fix closure", () => {
+  for (const path of activePolicyFiles.filter((path) => path.startsWith("site/"))) {
+    const source = readFileSync(new URL(path, repositoryRoot), "utf8");
+    assert.doesNotMatch(source, /quota-limit Pass|mark its review requirement as Pass|視為 Pass|額度限制 Pass/, path);
+    for (const rule of [
+      /complete initial coverage of the submitted head|首次完整覆蓋送審版本/,
+      /quota-limited reviews leave their requirements unmet|受額度限制的審查仍未滿足條件/,
+      /per-finding fix or counterevidence|逐項修正或反證/,
+      /exact diff from each reviewed SHA to the delivery SHA|各審查 SHA 至交付 SHA 的精確差異/,
+      /tests and required checks on the delivery head|交付版本的必要測試與檢查/,
+      /Record reviewed and verified SHAs separately|分記實際審查與修正驗證 SHA/,
+      /do not claim external review of a newer head|不宣稱新版本已被外部重審/,
+      /replacement PRs to evade the count|另開 PR 規避次數/,
+      /New functionality needs its own normal first reviews|新增功能另以獨立範圍正常首次送審/,
+    ]) assert.match(source, rule, path);
+  }
+});
+
 test("one-review closure verifies original fixes without claiming a re-review", () => {
   for (const rule of [
     "After complete initial coverage, close original findings with per-finding fix or counterevidence",
