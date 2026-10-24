@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.1](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.0...v2.4.1) (2026-10-24)
+
+
+### 🐛 Bug Fixes
+
+* align PR size policy with actual review coverage ([#42](https://github.com/jurislm/jt-harness-plugin/issues/42)) ([b25281b](https://github.com/jurislm/jt-harness-plugin/commit/b25281b00479e3940dbf5ffbc4558729b1dae802))
+
 ## [2.4.0](https://github.com/jurislm/jt-harness-plugin/compare/v2.3.1...v2.4.0) (2026-10-24)
 
 
