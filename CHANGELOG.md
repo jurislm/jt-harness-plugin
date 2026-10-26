@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.2](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.1...v2.4.2) (2026-10-26)
+
+
+### 📚 Documentation
+
+* 交付 PR 不應開成草稿，已開草稿須立刻轉 ready ([#45](https://github.com/jurislm/jt-harness-plugin/issues/45)) ([a76bf73](https://github.com/jurislm/jt-harness-plugin/commit/a76bf73fbbc7331cadd3dc27ade229127b92107d))
+
 ## [2.4.1](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.0...v2.4.1) (2026-10-24)
 
 
