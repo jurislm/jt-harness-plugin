@@ -1,10 +1,12 @@
 # JT Harness Plugin
 
-JurisLM 的 Codex／Cursor Plugin，包含唯一的軟體工程交付 Skill：[`using-jt-harness`](skills/using-jt-harness/SKILL.md)。若目前主機已安裝，工程方法優先使用官方 [Pstack](https://github.com/cursor/plugins/tree/main/pstack)；JT 保持交付政策的唯一來源，不複製另一套方法框架。
+JurisLM 的 Codex／Cursor Plugin，包含唯一的軟體工程交付 Skill：[`using-jt-harness`](skills/using-jt-harness/SKILL.md)。工程方法使用官方 [Pstack](https://github.com/cursor/plugins/tree/main/pstack)，每次 PR 審查必跑其 `interrogate` 與 `no-comments`；主機未安裝 Pstack 時，記錄該關卡未過並停止交付，不得略過；JT 保持交付政策的唯一來源，不複製另一套方法框架。
 
 官方網站：[JT Harness Plugin](https://jurislm.github.io/jt-harness-plugin/)
 
 ## 安裝
+
+前置需求：每次 PR 審查都必須在目前 HEAD 執行 [Pstack](https://github.com/cursor/plugins/tree/main/pstack) 的 `interrogate` 與 `no-comments`，與 Codex、CodeRabbit 審查各自獨立。請在同一主機另行安裝 Pstack；本 Plugin 不內含 Pstack。
 
 ### Codex
 
@@ -28,7 +30,7 @@ codex plugin add jt-harness-plugin@jurislm-jt-harness
 在目標 repository 執行 `node /path/to/jt-harness-plugin/scripts/review-size-gate.mjs <實際PR目標ref> HEAD`。
 在本 plugin 目錄也可用 `npm run review:size -- <實際PR目標ref> HEAD`。
 輸出完整 JSON coverage，成功退出碼為 0，超過內部門檻為 1，無法可靠計數為 2。
-預設 20 changed paths、100 KiB 文字 patch；完整記錄增刪行數，不推定廠商有通用行數上限。既有 repository 明定的行數限制仍必須遵守。大小通過不代表完整審查，兩個 reviewer 均須提供當前 HEAD 的完整結果與逐路徑覆蓋；實際因範圍被跳過或不完整時，必須拆成可獨立驗證的 PR。
+預設 20 changed paths、100 KiB 文字 patch；完整記錄增刪行數，不推定廠商有通用行數上限。既有 repository 明定的行數限制仍必須遵守。大小通過不代表完整審查，未依 Skill 例外忽略的 Codex／CodeRabbit 審查，均須提供當前 HEAD 的完整結果與逐路徑覆蓋；實際因範圍被跳過或不完整時，必須拆成可獨立驗證的 PR。
 可用第三參數 JSON 收緊門檻，例如 `'{"changedPaths":10}'`。超過門檻須按可驗收功能拆 PR。
 大小通過不代表審查通過，完整規則與官方來源見 Skill。
 

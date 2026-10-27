@@ -42,28 +42,52 @@ test("NUL coverage preserves renames, deletes, whitespace, generated and binary 
   assert.throws(() => parseNumstat("1\t0\ttruncated"));
 });
 
+function createHistoryRepo() {
+  const repo = mkdtempSync(join(tmpdir(), "review-size-range-"));
+  const git = (...args) => execFileSync("git", args, { cwd: repo, encoding: "utf8" }).trim();
+  git("init", "-q", "--template=");
+  git("config", "user.email", "test@example.invalid");
+  git("config", "user.name", "Review Size Test");
+  git("config", "commit.gpgsign", "false");
+  mkdirSync(join(repo, "nested"));
+  writeFileSync(join(repo, "base.txt"), "base\n");
+  git("add", ".");
+  git("commit", "-q", "-m", "base");
+  writeFileSync(join(repo, "nested", "first.txt"), "one\ntwo\n");
+  git("add", ".");
+  git("commit", "-q", "-m", "first");
+  writeFileSync(join(repo, "base.txt"), "changed\n");
+  git("add", ".");
+  git("commit", "-q", "-m", "second");
+  return { repo, git };
+}
+
 test("real Git range uses target merge-base and full history rather than final commit", () => {
-  const git = (...args) => execFileSync("git", args, { encoding: "utf8" }).trim();
-  const head = git("rev-parse", "HEAD");
-  const target = git("rev-parse", "HEAD~2");
-  const report = measureReview({ target, head });
-  assert.equal(report.mergeBase, target);
-  assert.equal(report.head, head);
-  assert.equal(report.target, target);
-  assert.equal(report.changedLines, report.coverage.reduce((sum, entry) => sum + (entry.additions ?? 0) + (entry.deletions ?? 0), 0));
-  assert.ok(report.changedPaths > 0);
-  assert.notDeepEqual(report.coverage, measureReview({ target: "HEAD~1", head }).coverage);
-  assert.equal(measureReview({ target: head, head }).changedPaths, 0);
-  const reverse = measureReview({ target: head, head: target });
-  assert.equal(reverse.mergeBase, target);
-  assert.equal(reverse.changedPaths, 0);
-  assert.throws(() => measureReview({ target: "missing-review-target", head }));
-  const fromSubdirectory = spawnSync(process.execPath, [fileURLToPath(new URL("./review-size-gate.mjs", import.meta.url)), target, head], {
-    cwd: fileURLToPath(new URL("./", import.meta.url)),
-    env: { ...process.env, GIT_CONFIG_COUNT: "1", GIT_CONFIG_KEY_0: "diff.relative", GIT_CONFIG_VALUE_0: "true" },
-  });
-  assert.equal(fromSubdirectory.status, report.pass ? 0 : 1);
-  assert.deepEqual(JSON.parse(fromSubdirectory.stdout).coverage, report.coverage);
+  const { repo, git } = createHistoryRepo();
+  try {
+    const head = git("rev-parse", "HEAD");
+    const target = git("rev-parse", "HEAD~2");
+    const report = measureReview({ target, head, cwd: repo });
+    assert.equal(report.mergeBase, target);
+    assert.equal(report.head, head);
+    assert.equal(report.target, target);
+    assert.equal(report.changedLines, report.coverage.reduce((sum, entry) => sum + (entry.additions ?? 0) + (entry.deletions ?? 0), 0));
+    assert.equal(report.changedPaths, 2);
+    assert.notDeepEqual(report.coverage, measureReview({ target: "HEAD~1", head, cwd: repo }).coverage);
+    assert.equal(measureReview({ target: head, head, cwd: repo }).changedPaths, 0);
+    const reverse = measureReview({ target: head, head: target, cwd: repo });
+    assert.equal(reverse.mergeBase, target);
+    assert.equal(reverse.changedPaths, 0);
+    assert.throws(() => measureReview({ target: "missing-review-target", head, cwd: repo }));
+    const fromSubdirectory = spawnSync(process.execPath, [fileURLToPath(new URL("./review-size-gate.mjs", import.meta.url)), target, head], {
+      cwd: join(repo, "nested"),
+      env: { ...process.env, GIT_CONFIG_COUNT: "1", GIT_CONFIG_KEY_0: "diff.relative", GIT_CONFIG_VALUE_0: "true" },
+    });
+    assert.equal(fromSubdirectory.status, report.pass ? 0 : 1);
+    assert.deepEqual(JSON.parse(fromSubdirectory.stdout).coverage, report.coverage);
+  } finally {
+    rmSync(repo, { recursive: true, force: true });
+  }
 });
 
 test("CLI requires an explicit target and fails closed on invalid refs", () => {
@@ -75,13 +99,13 @@ test("CLI requires an explicit target and fails closed on invalid refs", () => {
 });
 
 test("working-tree attributes cannot disguise text changes as binary", () => {
+  const { repo, git } = createHistoryRepo();
   const root = mkdtempSync(join(tmpdir(), "jt-attributes-"));
-  const git = (...args) => execFileSync("git", args, { encoding: "utf8" }).trim();
-  const target = git("rev-parse", "HEAD~2");
-  const head = git("rev-parse", "HEAD");
-  const expected = measureReview({ target, head });
   try {
-    execFileSync("git", ["init", "--quiet", `--object-format=${git("rev-parse", "--show-object-format")}`, root]);
+    const target = git("rev-parse", "HEAD~2");
+    const head = git("rev-parse", "HEAD");
+    const expected = measureReview({ target, head, cwd: repo });
+    execFileSync("git", ["init", "--quiet", "--template=", `--object-format=${git("rev-parse", "--show-object-format")}`, root]);
     writeFileSync(join(root, ".git", "objects", "info", "alternates"), git("rev-parse", "--path-format=absolute", "--git-path", "objects") + "\n");
     writeFileSync(join(root, ".gitattributes"), "* -diff\n");
     const actual = measureReview({ target, head, cwd: root });
@@ -89,6 +113,7 @@ test("working-tree attributes cannot disguise text changes as binary", () => {
     assert.deepEqual(actual, expected);
   } finally {
     rmSync(root, { recursive: true, force: true });
+    rmSync(repo, { recursive: true, force: true });
   }
 });
 
