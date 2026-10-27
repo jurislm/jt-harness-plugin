@@ -116,7 +116,7 @@ test("size policy distinguishes internal caps and fails incomplete reviews close
     "Recompute after stack rebase", "preserve integration validation",
     "150 for Free/Essentials", "300 for Team/Advanced/Enterprise", "100–300 for OSS",
     "300 or more changed files", "Unpublished does not mean unlimited",
-    "the pstack review below still runs", "keep only the pstack review as the review gate", "Codex and CodeRabbit are independent", "the other still needs its complete review",
+    "the pstack review below still runs", "Codex, CodeRabbit, and the pstack review are independent of each other", "runs every time, regardless of Codex or CodeRabbit", "the other still needs its complete review",
     "`interrogate` for multi-model adversarial review, plus `no-comments`",
     "in addition to CodeRabbit and Codex, run the pstack code review",
     "Require a complete result covering current HEAD", "quota-limited reviews never count as Pass",
