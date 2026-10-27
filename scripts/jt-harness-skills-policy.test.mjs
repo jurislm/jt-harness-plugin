@@ -95,6 +95,10 @@ test("JT Harness 规定一次审查、CodeRabbit 退路和自动合并条件", (
     "one CodeRabbit review",
     "wait for its result",
     "If CodeRabbit reports a rate or usage limit",
+    "If Codex reports a rate or usage limit, or returns no result, record the outcome without retrying or requesting a replacement",
+    "If CodeRabbit reports a rate or usage limit, or returns no result, record the outcome without retrying or requesting a replacement",
+    "Codex, CodeRabbit, and the pstack review are independent of each other",
+    "runs every time, regardless of Codex or CodeRabbit",
     "Do not request a second complete Codex or CodeRabbit review",
     "required checks pass on the current head",
     "full-project lint locally",
@@ -105,6 +109,7 @@ test("JT Harness 规定一次审查、CodeRabbit 退路和自动合并条件", (
   ]) {
     assert.ok(skill.includes(rule), `SKILL.md 缺少「${rule}」`);
   }
+  assert.ok(!/CodeRabbit CLI/.test(skill), "SKILL.md 不應保留已廢除的 CodeRabbit CLI 退路");
 });
 
 test("size policy distinguishes internal caps and fails incomplete reviews closed", () => {
