@@ -6,6 +6,8 @@ JurisLM 的 Codex／Cursor Plugin，包含唯一的軟體工程交付 Skill：[`
 
 ## 安裝
 
+前置需求：每次 PR 審查都必須在目前 HEAD 執行 [Pstack](https://github.com/cursor/plugins/tree/main/pstack) 的 `interrogate` 與 `no-comments`，與 Codex、CodeRabbit 審查各自獨立。請在同一主機另行安裝 Pstack；本 Plugin 不內含 Pstack。
+
 ### Codex
 
 ```bash
