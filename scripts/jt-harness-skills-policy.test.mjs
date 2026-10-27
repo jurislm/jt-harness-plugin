@@ -118,6 +118,7 @@ test("size policy distinguishes internal caps and fails incomplete reviews close
     "300 or more changed files", "Unpublished does not mean unlimited",
     "do not treat it as a failure or a merge blocker", "If the CLI is also limited, record both limits and ignore CodeRabbit",
     "run `interrogate` for multi-model adversarial review and `blast-radius`",
+    "The only exceptions are the two ignore cases above", "An ignored review is recorded, not counted as Pass",
     "Require a complete result covering current HEAD", "quota-limited reviews never count as Pass",
   ]) assert.ok(skill.includes(rule), `Missing policy: ${rule}`);
   assert.doesNotMatch(skill, /quota-limit Pass|mark the Codex review requirement as Pass/);
