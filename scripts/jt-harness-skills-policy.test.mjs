@@ -36,7 +36,7 @@ test("JT Harness 只暴露一个自动触发的规则 Skill", () => {
   assert.doesNotMatch(frontmatter[1], /disable-model-invocation:\s*true/);
 });
 
-test("Pstack is preferred without an external skill hard dependency", () => {
+test("Pstack is required for every review and its absence stops delivery", () => {
   const retiredProviderName = ["super", "powers"].join("");
   for (const path of activePolicyFiles) {
     const source = readFileSync(new URL(path, repositoryRoot), "utf8").toLowerCase();
@@ -44,7 +44,8 @@ test("Pstack is preferred without an external skill hard dependency", () => {
   }
 
   for (const rule of [
-    "When the official Pstack plugin is available on the current host, prefer it for engineering methods",
+    "Use the official Pstack plugin for engineering methods",
+    "if Pstack is not installed on the current host, record that review gate as unmet and stop delivery instead of skipping it",
     "Use only capabilities exposed by the current host",
     "Confirm it fails for the intended reason",
     "git worktree add",
@@ -99,6 +100,11 @@ test("JT Harness 规定一次审查、CodeRabbit 退路和自动合并条件", (
     "If CodeRabbit reports a rate or usage limit, or returns no result, record the outcome without retrying or requesting a replacement",
     "Codex, CodeRabbit, and the pstack review are independent of each other",
     "runs every time, regardless of Codex or CodeRabbit",
+    "If Codex and CodeRabbit are both ignored under these exceptions, a completed pstack review on the current head satisfies the review gate",
+    "lint, required checks and mergeability below still apply",
+    "A queued or running review is not a missing result; wait for it to finish",
+    "per-path coverage from each of Codex and CodeRabbit that is not ignored",
+    "beyond this size, coverage and pstack review policy",
     "Do not request a second complete Codex or CodeRabbit review",
     "required checks pass on the current head",
     "full-project lint locally",

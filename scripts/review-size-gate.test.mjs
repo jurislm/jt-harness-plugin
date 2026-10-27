@@ -42,24 +42,29 @@ test("NUL coverage preserves renames, deletes, whitespace, generated and binary 
   assert.throws(() => parseNumstat("1\t0\ttruncated"));
 });
 
-test("real Git range uses target merge-base and full history rather than final commit", () => {
+function createHistoryRepo() {
   const repo = mkdtempSync(join(tmpdir(), "review-size-range-"));
+  const git = (...args) => execFileSync("git", args, { cwd: repo, encoding: "utf8" }).trim();
+  git("init", "-q", "--template=");
+  git("config", "user.email", "test@example.invalid");
+  git("config", "user.name", "Review Size Test");
+  git("config", "commit.gpgsign", "false");
+  mkdirSync(join(repo, "nested"));
+  writeFileSync(join(repo, "base.txt"), "base\n");
+  git("add", ".");
+  git("commit", "-q", "-m", "base");
+  writeFileSync(join(repo, "nested", "first.txt"), "one\ntwo\n");
+  git("add", ".");
+  git("commit", "-q", "-m", "first");
+  writeFileSync(join(repo, "base.txt"), "changed\n");
+  git("add", ".");
+  git("commit", "-q", "-m", "second");
+  return { repo, git };
+}
+
+test("real Git range uses target merge-base and full history rather than final commit", () => {
+  const { repo, git } = createHistoryRepo();
   try {
-    const git = (...args) => execFileSync("git", args, { cwd: repo, encoding: "utf8" }).trim();
-    git("init", "-q");
-    git("config", "user.email", "test@example.invalid");
-    git("config", "user.name", "Review Size Test");
-    git("config", "commit.gpgsign", "false");
-    mkdirSync(join(repo, "nested"));
-    writeFileSync(join(repo, "base.txt"), "base\n");
-    git("add", ".");
-    git("commit", "-q", "-m", "base");
-    writeFileSync(join(repo, "nested", "first.txt"), "one\ntwo\n");
-    git("add", ".");
-    git("commit", "-q", "-m", "first");
-    writeFileSync(join(repo, "base.txt"), "changed\n");
-    git("add", ".");
-    git("commit", "-q", "-m", "second");
     const head = git("rev-parse", "HEAD");
     const target = git("rev-parse", "HEAD~2");
     const report = measureReview({ target, head, cwd: repo });
@@ -94,13 +99,13 @@ test("CLI requires an explicit target and fails closed on invalid refs", () => {
 });
 
 test("working-tree attributes cannot disguise text changes as binary", () => {
+  const { repo, git } = createHistoryRepo();
   const root = mkdtempSync(join(tmpdir(), "jt-attributes-"));
-  const git = (...args) => execFileSync("git", args, { encoding: "utf8" }).trim();
-  const target = git("rev-parse", "HEAD~2");
-  const head = git("rev-parse", "HEAD");
-  const expected = measureReview({ target, head });
   try {
-    execFileSync("git", ["init", "--quiet", `--object-format=${git("rev-parse", "--show-object-format")}`, root]);
+    const target = git("rev-parse", "HEAD~2");
+    const head = git("rev-parse", "HEAD");
+    const expected = measureReview({ target, head, cwd: repo });
+    execFileSync("git", ["init", "--quiet", "--template=", `--object-format=${git("rev-parse", "--show-object-format")}`, root]);
     writeFileSync(join(root, ".git", "objects", "info", "alternates"), git("rev-parse", "--path-format=absolute", "--git-path", "objects") + "\n");
     writeFileSync(join(root, ".gitattributes"), "* -diff\n");
     const actual = measureReview({ target, head, cwd: root });
@@ -108,6 +113,7 @@ test("working-tree attributes cannot disguise text changes as binary", () => {
     assert.deepEqual(actual, expected);
   } finally {
     rmSync(root, { recursive: true, force: true });
+    rmSync(repo, { recursive: true, force: true });
   }
 });
 
