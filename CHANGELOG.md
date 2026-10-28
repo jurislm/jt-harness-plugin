@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.4](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.3...v2.4.4) (2026-10-28)
+
+
+### 🐛 Bug Fixes
+
+* recover stalled Codex reviews without approval waits ([#50](https://github.com/jurislm/jt-harness-plugin/issues/50)) ([bc72e22](https://github.com/jurislm/jt-harness-plugin/commit/bc72e22c997d30cd6d4a141f783eb0fca7918db8))
+
 ## [2.4.3](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.2...v2.4.3) (2026-10-28)
 
 
