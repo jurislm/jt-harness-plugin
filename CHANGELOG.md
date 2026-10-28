@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.3](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.2...v2.4.3) (2026-10-28)
+
+
+### 🐛 Bug Fixes
+
+* clarify media acceptance and stalled review handling ([#48](https://github.com/jurislm/jt-harness-plugin/issues/48)) ([eda6161](https://github.com/jurislm/jt-harness-plugin/commit/eda61610ea777f23acd4b357d3ab31198fec721e))
+
 ## [2.4.2](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.1...v2.4.2) (2026-10-26)
 
 
