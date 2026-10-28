@@ -6,7 +6,7 @@ Use this only when obtaining a Codex review is already within the user's authori
 
 Read the current PR head, review receipts, summary, and all available summary-edit history. Track Code Review and Security Review separately: a security update is not code-review progress. Preserve the original trigger, request/start times, last fresh progress, observed errors or quota messages, and the timestamps of live checks. An edited summary can replace an older request's state; retain each request's evidence before another submission.
 
-If the required review already completed for the current head, use that result. A delayed user reply or automation wakeup does not create a new review request. If no review started, check repository connection, review settings, automatic triggers and the exact `@codex review` command before following the initial-request rule in the main Skill.
+If the required review already completed for the current head, use that result. A delayed user reply or automation wakeup does not create a new review request. If Code Review never started, check the repository connection, Code Review settings, automatic triggers and exact `@codex review` command before following the initial-request rule. If an authorized Security Review never started, check Security Review settings, its automatic trigger and exact `@codex security review` command before making that type's initial request. Preserve completed Code Review instead of requesting it again for a missing Security Review.
 
 Explicit errors, quota limits and finished reviews with no result follow the existing review exceptions. A stale running label establishes neither active execution nor quota exhaustion. Report the recorded times, not an estimated duration without a starting event.
 
