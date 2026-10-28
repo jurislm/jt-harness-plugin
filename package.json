@@ -10,7 +10,7 @@
   "scripts": {
     "test": "node --test scripts/*.test.mjs",
     "manifest:check": "node scripts/validate-plugin-manifests.mjs",
-    "lint:md": "markdownlint README.md 'skills/*/SKILL.md'",
+    "lint:md": "markdownlint README.md 'skills/**/*.md'",
     "validate": "npm run manifest:check && npm run test && npm run lint:md",
     "review:size": "node scripts/review-size-gate.mjs"
   },
