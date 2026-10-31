@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.6](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.5...v2.4.6) (2026-10-31)
+
+
+### 📚 Documentation
+
+* define JT Harness issue and spec workflow ([61ff4bf](https://github.com/jurislm/jt-harness-plugin/commit/61ff4bfea7cc2cfc4d1769b32f5f4dd3d84e3102))
+
 ## [2.4.5](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.4...v2.4.5) (2026-10-31)
 
 
