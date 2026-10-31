@@ -24,6 +24,15 @@ Keep JT as the single source of truth for delivery policy. Use the official Psta
 
 ## Linear
 
+### Issue and spec workflow (JT Harness team convention)
+
+Follow this convention based on [Linear's issue-writing and project-planning guidance](https://linear.app/method/write-issues-not-user-stories); it is a team choice, not a Linear-mandated template. The canonical policy and official references are in the [JT Harness project overview](https://linear.app/jurislm/project/jt-harness-plugin-1d6000794746).
+
+- **Small bugs and tasks:** Keep the problem, scope, how to address it, acceptance conditions, and final result on the issue. Do not create a separate spec by default.
+- **Features spanning issues:** Keep shared behavior, boundaries, and decisions in one canonical spec. Use the existing project overview as a shared entry point; link the canonical spec and the relevant section from each actionable issue. A detailed spec may live in issue Resources when that is the right home. Do not require every spec to live on a project or create duplicate specs.
+- **Changes to existing product rules:** Discuss and settle the change first, then update the canonical spec and affected issues together, with links in both directions. Do not defer the agreed spec update until issue closure.
+- **Completion:** Check the implementation, issue acceptance, and spec for consistency. Update the spec when shared behavior changed; do not force a document change for an implementation-only task. Avoid duplicate specs and documentation without useful content.
+
 Before editing, search for and read the matching Linear issue. If none exists, create a concise issue in the relevant team and attach a project when known. Set it to In Progress and record a concise start note. At completion, record the result, PR, review outcomes, required checks, merge state, and runtime readback when applicable. Mark Done only when the issue's acceptance is verified. Skip per-step status comments.
 
 ## Tool routing
