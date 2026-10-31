@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.5](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.4...v2.4.5) (2026-10-31)
+
+
+### 🐛 Bug Fixes
+
+* require worktrees under the repository .worktree directory ([#52](https://github.com/jurislm/jt-harness-plugin/issues/52)) ([28659b2](https://github.com/jurislm/jt-harness-plugin/commit/28659b2668c4ab4bd3445f0bf3852df466b39f11))
+
 ## [2.4.4](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.3...v2.4.4) (2026-10-28)
 
 
