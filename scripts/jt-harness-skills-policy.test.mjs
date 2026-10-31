@@ -49,6 +49,9 @@ test("Pstack is required for every review and its absence stops delivery", () =>
     "Use only capabilities exposed by the current host",
     "Confirm it fails for the intended reason",
     "git worktree add",
+    "Create every worktree under the current repository's `.worktree/` directory",
+    "including worktrees created by host-managed tools",
+    "confirm `.worktree/` is listed in `.gitignore`",
     "main/root checkout read-only",
     "Do not add comments to code, tests, scripts, or configuration",
   ]) {
