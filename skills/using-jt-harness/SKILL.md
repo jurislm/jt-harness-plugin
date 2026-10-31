@@ -19,7 +19,7 @@ Keep JT as the single source of truth for delivery policy. Use the official Psta
 ## Worktrees
 
 - Make engineering changes in a task-specific branch and isolated worktree. Keep the main/root checkout read-only for task development: when clean and safe, update it with `git pull --ff-only`; do not edit task files, commit task changes, or directly push development changes from it. Reuse only a worktree explicitly attached to this task.
-- Prefer the host-managed worktree tool when it supports the repository. If it is unsupported, use native `git worktree add` with a unique branch and path. Confirm the destination does not exist and, if it is inside the repository, is covered by `.gitignore` before creating it.
+- Create every worktree under the current repository's `.worktree/` directory, including worktrees created by host-managed tools; never create one outside the repository. Prefer the host-managed worktree tool only when it can place the worktree there; otherwise use native `git worktree add .worktree/<branch-slug> -b <branch>` with a unique branch. Before creating it, confirm `.worktree/` is listed in `.gitignore` and the destination does not exist.
 - If the platform actually denies worktree creation or no usable route exists, stop and report the exact operation. Never fall back to writing in the main/root checkout or bypass platform restrictions.
 
 ## Linear
