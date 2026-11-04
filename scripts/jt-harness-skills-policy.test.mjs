@@ -76,7 +76,8 @@ test("Pstack is required for code, operational policy, and configuration PRs, no
   assert.ok(chineseSite.includes("明確回報錯誤、rate／usage limit 或審查完成但無結果"));
   assert.ok(chineseSite.includes("審查完成但無結果"));
   assert.ok(chineseSite.includes("合併前必須解決 Codex 與 CodeRabbit 的可採取行動 findings 並驗證修正。Pstack 的可採取行動 findings 必須解決或明確駁回。"));
-  assert.ok(chineseSite.includes("並記錄證據與已審查 commit SHA"));
+  assert.ok(chineseSite.includes("每次內容 audit 都須記錄 changed paths、claim/source pairs、link/example 結果及已審查 commit SHA"));
+  assert.ok(chineseSite.includes("格式或頁面佈局變更時檢查渲染結果"));
   assert.ok(chineseSite.includes("該 commit 後若文件／內容路徑再變更，合併前重做對應 audit 並更新證據"));
   assert.doesNotMatch(chineseSite, /`(?:interrogate|no-comments)`/);
   const englishSite = readFileSync(new URL("site/en/index.html", repositoryRoot), "utf8");
@@ -85,6 +86,8 @@ test("Pstack is required for code, operational policy, and configuration PRs, no
   assert.ok(englishSite.includes("explicitly reports an error or rate/usage limit, or finishes without a result"));
   assert.ok(englishSite.includes("finishes without a result"));
   assert.ok(englishSite.includes("Resolve actionable Codex and CodeRabbit findings and verify fixes before merging. Resolve or explicitly reject actionable Pstack findings before merging."));
+  assert.ok(englishSite.includes("For every content audit, record changed paths, claim/source pairs, link/example results, and the audited commit SHA"));
+  assert.ok(englishSite.includes("Inspect rendered output only when formatting or page layout changes"));
   assert.ok(englishSite.includes("the audited commit SHA"));
   assert.ok(englishSite.includes("Re-audit any documentation/content paths changed after that commit before merging"));
   assert.doesNotMatch(englishSite, /`(?:interrogate|no-comments)`/);
