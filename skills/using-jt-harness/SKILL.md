@@ -56,7 +56,7 @@ Count all changes without path filters. Measure from isolated Git metadata and a
 
 ### Content audit
 
-For documentation or content-only PRs, audit factual claims against the canonical repository source or cited authoritative sources, validate links and command/file examples, and inspect rendered output when formatting or page layout changes. Record changed paths, claim/source pairs, link/example results, and rendered-output evidence in the PR. This author-run content audit does not replace Codex or CodeRabbit review requirements.
+For documentation or content-only PRs, audit factual claims against the canonical repository source or cited authoritative sources, validate links and command/file examples, and inspect rendered output when formatting or page layout changes. Record changed paths, claim/source pairs, link/example results, rendered-output evidence, and the audited commit SHA in the PR. If any documentation or content path changes after that commit, re-audit the affected paths and update evidence before merge. This author-run content audit does not replace Codex or CodeRabbit review requirements.
 
 ### Media acceptance
 

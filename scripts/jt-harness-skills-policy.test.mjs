@@ -51,6 +51,7 @@ test("Pstack is required for code, operational policy, and configuration PRs, no
     "Mixed PRs with any code, operational instruction/policy, or configuration change still require the Pstack review",
     "For a documentation, content, or non-executable media-only PR, first confirm no code, operational instruction/policy, or configuration files changed; then record Pstack as not applicable",
     "For documentation or content-only PRs, audit factual claims against the canonical repository source or cited authoritative sources, validate links and command/file examples, and inspect rendered output when formatting or page layout changes",
+    "the audited commit SHA in the PR. If any documentation or content path changes after that commit, re-audit the affected paths and update evidence before merge",
     "For media-only PRs, complete the Media acceptance section below",
     "Codex and CodeRabbit remain distinct review requirements for every PR, subject to the quota/result exceptions below",
     "If Pstack is not installed on the current host for a Pstack-required PR, record that review gate as unmet",
@@ -74,12 +75,18 @@ test("Pstack is required for code, operational policy, and configuration PRs, no
   assert.ok(chineseSite.includes("純文件／內容 PR 確認沒有程式碼、操作型指示／政策或設定變更後記錄 Pstack 不適用"));
   assert.ok(chineseSite.includes("明確回報錯誤、rate／usage limit 或審查完成但無結果"));
   assert.ok(chineseSite.includes("審查完成但無結果"));
+  assert.ok(chineseSite.includes("合併前必須解決 Codex 與 CodeRabbit 的可採取行動 findings 並驗證修正。Pstack 的可採取行動 findings 必須解決或明確駁回。"));
+  assert.ok(chineseSite.includes("並記錄證據與已審查 commit SHA"));
+  assert.ok(chineseSite.includes("該 commit 後若文件／內容路徑再變更，合併前重做對應 audit 並更新證據"));
   assert.doesNotMatch(chineseSite, /`(?:interrogate|no-comments)`/);
   const englishSite = readFileSync(new URL("site/en/index.html", repositoryRoot), "utf8");
   assert.ok(englishSite.includes("Pstack <code>interrogate</code> and <code>no-comments</code> apply to code, tests, scripts, operational agent instructions/policies, and any configuration PRs"));
   assert.ok(englishSite.includes("Documentation/content-only PRs confirm there are no code, operational-policy, or configuration changes"));
   assert.ok(englishSite.includes("explicitly reports an error or rate/usage limit, or finishes without a result"));
   assert.ok(englishSite.includes("finishes without a result"));
+  assert.ok(englishSite.includes("Resolve actionable Codex and CodeRabbit findings and verify fixes before merging. Resolve or explicitly reject actionable Pstack findings before merging."));
+  assert.ok(englishSite.includes("the audited commit SHA"));
+  assert.ok(englishSite.includes("Re-audit any documentation/content paths changed after that commit before merging"));
   assert.doesNotMatch(englishSite, /`(?:interrogate|no-comments)`/);
 });
 
