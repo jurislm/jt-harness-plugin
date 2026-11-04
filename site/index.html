@@ -90,7 +90,7 @@
             <article class="feature-card">
               <span class="feature-index">03 / REVIEW</span>
               <h3>通過審查門檻</h3>
-              <p>Codex 與 CodeRabbit 各進行一次完整審查；Codex 審查因明確回報的使用額度限制而受阻時，記錄證據並將其審查條件視為 Pass，不重試或要求替代審查。其他 Codex 失敗或沒有結果仍未滿足審查條件。修正問題並驗證後不再要求完整或增量審查。本機全專案 lint 必須通過，main 的既有錯誤也不能跳過；最新提交的必要檢查通過且 GitHub 可合併後，直接合併，不另等人工核准或增加外掛門檻。交付用的 PR 不應該開成草稿（草稿不會觸發 Codex 與 CodeRabbit 自動審查）；如果已經開了草稿，要立刻轉成 ready，讓 Codex 和 CodeRabbit 開始審查，不要等到合入前才轉；PR 已是 ready 但自動審查未啟動時，依審查規則請求一次。若 CodeRabbit 的 PR 與 CLI 管道皆受限，則依已滿足的 Codex 審查條件繼續，包含已記錄的額度限制 Pass；GitHub 實際阻擋時記錄原因，不繞過平台限制。僅審查或明確禁止合併的工作不合併。</p>
+              <p>Codex 與 CodeRabbit 各進行一次完整審查；程式碼／設定 PR 另須獨立完成 Pstack `interrogate` 與 `no-comments`。純文件、內容或非執行媒體 PR 確認沒有程式碼／設定變更後，記錄 Pstack 不適用，並完成對應的內容 audit 或媒體驗收。Codex 審查因明確回報的使用額度限制而受阻時，記錄證據並將其審查條件視為 Pass，不重試或要求替代審查。其他 Codex 失敗或沒有結果仍未滿足審查條件。修正問題並驗證後不再要求完整或增量審查。本機全專案 lint 必須通過，main 的既有錯誤也不能跳過；最新提交的必要檢查通過且 GitHub 可合併後，直接合併，不另等人工核准或增加外掛門檻。交付用的 PR 不應該開成草稿（草稿不會觸發 Codex 與 CodeRabbit 自動審查）；如果已經開了草稿，要立刻轉成 ready，讓 Codex 和 CodeRabbit 開始審查，不要等到合入前才轉；PR 已是 ready 但自動審查未啟動時，依審查規則請求一次。若 CodeRabbit 的 PR 與 CLI 管道皆受限，則依已滿足的 Codex 審查條件繼續，包含已記錄的額度限制 Pass；GitHub 實際阻擋時記錄原因，不繞過平台限制。僅審查或明確禁止合併的工作不合併。</p>
             </article>
           </div>
         </div>
@@ -133,7 +133,7 @@ codex plugin add jt-harness-plugin@jurislm-jt-harness</code></pre>
         <div class="scope-content">
           <div>
             <h2>這是一個 Skill，<br>不是另一套服務。</h2>
-            <p>JT Harness 的 Skill 會自動觸發並提供交付規則；若目前主機已安裝，工程方法優先使用官方 <a class="inline-link" href="https://github.com/cursor/plugins/tree/main/pstack">Pstack</a>。JT 專注於交付政策，不複製另一套方法框架。main/root checkout 僅供任務開發唯讀：工作目錄乾淨且更新安全時，可用 <code>git pull --ff-only</code> 更新；不得在該 checkout 編輯任務檔案、提交任務變更或直接推送開發變更。<a class="inline-link" href="https://github.com/jurislm/jt-harness-plugin/blob/main/skills/using-jt-harness/SKILL.md">閱讀完整交付規則</a>。</p>
+            <p>JT Harness 的 Skill 會自動觸發並提供交付規則；若目前主機已安裝，工程方法優先使用官方 <a class="inline-link" href="https://github.com/cursor/plugins/tree/main/pstack">Pstack</a>。Pstack `interrogate` 與 `no-comments` 適用於程式碼／設定 PR；純文件、內容或非執行媒體 PR 確認沒有程式碼／設定變更後，記錄不適用並完成對應驗收。JT 專注於交付政策，不複製另一套方法框架。main/root checkout 僅供任務開發唯讀：工作目錄乾淨且更新安全時，可用 <code>git pull --ff-only</code> 更新；不得在該 checkout 編輯任務檔案、提交任務變更或直接推送開發變更。<a class="inline-link" href="https://github.com/jurislm/jt-harness-plugin/blob/main/skills/using-jt-harness/SKILL.md">閱讀完整交付規則</a>。</p>
           </div>
           <ul class="scope-list">
             <li><span>✓</span> Codex 與 Cursor 的軟體工程交付規則</li>

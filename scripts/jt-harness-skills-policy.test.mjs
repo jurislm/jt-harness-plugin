@@ -36,7 +36,7 @@ test("JT Harness 只暴露一个自动触发的规则 Skill", () => {
   assert.doesNotMatch(frontmatter[1], /disable-model-invocation:\s*true/);
 });
 
-test("Pstack is required for every review and its absence stops delivery", () => {
+test("Pstack is required for code and configuration PRs, not pure content or media PRs", () => {
   const retiredProviderName = ["super", "powers"].join("");
   for (const path of activePolicyFiles) {
     const source = readFileSync(new URL(path, repositoryRoot), "utf8").toLowerCase();
@@ -45,7 +45,11 @@ test("Pstack is required for every review and its absence stops delivery", () =>
 
   for (const rule of [
     "Use the official Pstack plugin for engineering methods",
-    "if Pstack is not installed on the current host, record that review gate as unmet and stop delivery instead of skipping it",
+    "any PR that changes executable code, tests, scripts, runtime configuration, or build configuration",
+    "Mixed PRs with any code or configuration change still require the Pstack review",
+    "For a documentation, content, or non-executable media-only PR, first confirm no code or configuration files changed; then record Pstack as not applicable",
+    "Codex and CodeRabbit remain distinct review requirements for every PR, subject to the quota/result exceptions below",
+    "If Pstack is not installed on the current host for a code/config PR, record that review gate as unmet",
     "Use only capabilities exposed by the current host",
     "Confirm it fails for the intended reason",
     "git worktree add",
@@ -57,6 +61,16 @@ test("Pstack is required for every review and its absence stops delivery", () =>
   ]) {
     assert.ok(skill.includes(rule), `SKILL.md 缺少「${rule}」`);
   }
+
+  const readme = readFileSync(new URL("README.md", repositoryRoot), "utf8");
+  assert.ok(readme.includes("程式碼／設定 PR 必跑其 `interrogate` 與 `no-comments`"));
+  assert.ok(readme.includes("Codex 與 CodeRabbit 是每個 PR 各自獨立的審查條件"));
+  const chineseSite = readFileSync(new URL("site/index.html", repositoryRoot), "utf8");
+  assert.ok(chineseSite.includes("Pstack `interrogate` 與 `no-comments` 適用於程式碼／設定 PR"));
+  assert.ok(chineseSite.includes("純文件、內容或非執行媒體 PR 確認沒有程式碼／設定變更後，記錄不適用"));
+  const englishSite = readFileSync(new URL("site/en/index.html", repositoryRoot), "utf8");
+  assert.ok(englishSite.includes("Pstack `interrogate` and `no-comments` apply to code/config PRs"));
+  assert.ok(englishSite.includes("documentation, content, or non-executable media-only PRs confirm no code/config paths changed"));
 });
 
 test("已退役的 Skill 名称不残留在入口或 marketplace metadata", () => {
@@ -102,9 +116,9 @@ test("JT Harness 规定一次审查、CodeRabbit 退路和自动合并条件", (
     "If Codex reports a rate or usage limit, or returns no result, record the outcome without retrying or requesting a replacement",
     "If CodeRabbit reports a rate or usage limit, or returns no result, record the outcome without retrying or requesting a replacement",
     "Codex, CodeRabbit, and the pstack review are independent of each other",
-    "runs every time, regardless of Codex or CodeRabbit",
-    "If Codex and CodeRabbit are both ignored under these exceptions, a completed pstack review on the current head satisfies the review gate",
-    "lint, required checks and mergeability below still apply",
+    "Pstack applies only when the PR changes executable code, tests, scripts, or runtime/build configuration",
+    "If Codex and CodeRabbit are both ignored under these exceptions, a completed pstack review on the current head satisfies the review gate for a code/config PR",
+    "Lint, required checks and mergeability below still apply",
     "A queued or running review is not a missing result; wait for it to finish",
     "per-path coverage from each of Codex and CodeRabbit that is not ignored",
     "beyond this size, coverage and pstack review policy",
@@ -130,9 +144,9 @@ test("size policy distinguishes internal caps and fails incomplete reviews close
     "Recompute after stack rebase", "preserve integration validation",
     "150 for Free/Essentials", "300 for Team/Advanced/Enterprise", "100–300 for OSS",
     "300 or more changed files", "Unpublished does not mean unlimited",
-    "the pstack review below still runs", "Codex, CodeRabbit, and the pstack review are independent of each other", "runs every time, regardless of Codex or CodeRabbit", "the other still needs its complete review",
+    "for code/config PRs, the pstack review below still runs", "Codex, CodeRabbit, and the pstack review are independent of each other", "Pstack applies only when the PR changes executable code, tests, scripts, or runtime/build configuration", "the other still needs its complete review",
     "`interrogate` for multi-model adversarial review, plus `no-comments`",
-    "in addition to CodeRabbit and Codex, run the pstack code review",
+    "run the pstack code review on the current head",
     "Require a complete result covering current HEAD", "quota-limited reviews never count as Pass",
   ]) assert.ok(skill.includes(rule), `Missing policy: ${rule}`);
   assert.doesNotMatch(skill, /quota-limit Pass|mark the Codex review requirement as Pass/);
