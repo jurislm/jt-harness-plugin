@@ -1,12 +1,12 @@
 # JT Harness Plugin
 
-JurisLM 的 Codex／Cursor Plugin，包含唯一的軟體工程交付 Skill：[`using-jt-harness`](skills/using-jt-harness/SKILL.md)。工程方法使用官方 [Pstack](https://github.com/cursor/plugins/tree/main/pstack)，每次 PR 審查必跑其 `interrogate` 與 `no-comments`；主機未安裝 Pstack 時，記錄該關卡未過並停止交付，不得略過；JT 保持交付政策的唯一來源，不複製另一套方法框架。
+JurisLM 的 Codex／Cursor Plugin，包含唯一的軟體工程交付 Skill：[`using-jt-harness`](skills/using-jt-harness/SKILL.md)。工程方法使用官方 [Pstack](https://github.com/cursor/plugins/tree/main/pstack)；程式碼、測試、腳本、由 repo／plugin 載入的操作型 agent 指示／政策，或任何設定變更的 PR 必跑其 `interrogate` 與 `no-comments`。純文件、內容或非執行媒體 PR 確認沒有程式碼、操作型政策或設定變更後，記錄 Pstack 不適用，完成內容 audit 或媒體驗收。JT 保持交付政策的唯一來源，不複製另一套方法框架。
 
 官方網站：[JT Harness Plugin](https://jurislm.github.io/jt-harness-plugin/)
 
 ## 安裝
 
-前置需求：每次 PR 審查都必須在目前 HEAD 執行 [Pstack](https://github.com/cursor/plugins/tree/main/pstack) 的 `interrogate` 與 `no-comments`，與 Codex、CodeRabbit 審查各自獨立。請在同一主機另行安裝 Pstack；本 Plugin 不內含 Pstack。
+前置需求：任何含程式碼、測試、腳本、操作型 agent 指示／政策，或任何設定變更的 PR，都必須在目前 HEAD 執行 [Pstack](https://github.com/cursor/plugins/tree/main/pstack) 的 `interrogate` 與 `no-comments`；混合 PR 仍適用。Codex 與 CodeRabbit 是每個 PR 各自獨立的審查條件，僅適用 Skill 明列的額度／無結果例外。請在同一主機另行安裝 Pstack；本 Plugin 不內含 Pstack。
 
 ### Codex
 
