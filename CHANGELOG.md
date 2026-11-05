@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.8](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.7...v2.4.8) (2026-11-05)
+
+
+### 🐛 Bug Fixes
+
+* **worktrees:** honor repository worktree directory ([#59](https://github.com/jurislm/jt-harness-plugin/issues/59)) ([7c7a19f](https://github.com/jurislm/jt-harness-plugin/commit/7c7a19f9041087d6c80f5a78a1c28a4e28f43044))
+
 ## [2.4.7](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.6...v2.4.7) (2026-11-05)
 
 
