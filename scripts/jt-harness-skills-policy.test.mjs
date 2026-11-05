@@ -76,8 +76,16 @@ test("Pstack is required for code, operational policy, and configuration PRs, no
   ]) {
     assert.ok(skill.includes(rule), `SKILL.md 缺少「${rule}」`);
   }
-  const worktreeDirectoryNames = [...skill.matchAll(/`?\.worktrees?\/?`?/g)].map(([name]) => name.replaceAll("`", ""));
-  assert.deepEqual(worktreeDirectoryNames, [".worktree/", ".worktrees/"]);
+  const mandatoryWorktreePath = /\b(?:every|each|all)\s+(?:(?:[\w'-]+)\s+){0,2}worktrees?\b[^.!?\n]*`\.worktrees?\/`|`\.worktrees?\/`[^.!?\n]*\b(?:every|each|all)\s+(?:(?:[\w'-]+)\s+){0,2}worktrees?\b/i;
+  assert.doesNotMatch(skill, mandatoryWorktreePath);
+  assert.doesNotMatch("Each repo may use its own `.worktrees/` path.", mandatoryWorktreePath);
+  for (const policy of [
+    "Create every worktree under `.worktree/`.",
+    "Use `.worktrees/` for every worktree.",
+    "All task worktrees must use `.worktree/`.",
+  ]) {
+    assert.match(policy, mandatoryWorktreePath, `應拒絕固定 worktree 路徑規則：「${policy}」`);
+  }
   assert.ok(skill.includes("do not use an unignored or external path"));
 
   const readme = readFileSync(new URL("README.md", repositoryRoot), "utf8");
