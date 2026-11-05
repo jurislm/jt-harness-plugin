@@ -76,7 +76,8 @@ test("Pstack is required for code, operational policy, and configuration PRs, no
   ]) {
     assert.ok(skill.includes(rule), `SKILL.md 缺少「${rule}」`);
   }
-  assert.doesNotMatch(skill, /\b(?:every|each|all)\b[^.\n]*`\.worktrees?\/`|`\.worktrees?\/`[^.\n]*\b(?:every|each|all)\b/i);
+  const worktreeDirectoryNames = [...skill.matchAll(/`?\.worktrees?\/?`?/g)].map(([name]) => name.replaceAll("`", ""));
+  assert.deepEqual(worktreeDirectoryNames, [".worktree/", ".worktrees/"]);
   assert.ok(skill.includes("do not use an unignored or external path"));
 
   const readme = readFileSync(new URL("README.md", repositoryRoot), "utf8");
