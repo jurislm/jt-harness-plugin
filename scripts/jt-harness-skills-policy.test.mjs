@@ -61,12 +61,14 @@ test("Pstack is required for code, operational policy, and configuration PRs, no
     "Use a repository-local path that the target repository already ignores for worktrees",
     "Preserve its established name",
     "Examples include `.worktree/` and `.worktrees/`",
+    "Use a single path component as the worktree directory name",
+    "Do not include path separators or use `.` or `..`",
     "Keep the worktree inside the repository",
-    "confirm that the selected path is ignored and its resolved location stays beneath the repository root",
-    "Resolve symlinks when checking the path",
-    "Confirm that the destination does not exist",
+    "build the complete destination from the ignored path and task slug",
+    "Confirm that the complete destination is ignored and does not exist",
+    "Resolve existing parent components and symlinks, and confirm that the destination stays beneath the repository root",
     "Prefer the host-managed worktree tool only when it can use the selected path",
-    "Otherwise, run `git worktree add <ignored-worktree-directory>/<branch-slug> -b <unique-branch>`",
+    "Otherwise, run `git worktree add <ignored-worktree-directory>/<task-slug> -b <unique-branch>`",
     "If the repository has no configured, ignored worktree path, stop and report the blocker",
     "Do not modify the root checkout or `.gitignore`",
     "main/root checkout read-only",
@@ -74,7 +76,8 @@ test("Pstack is required for code, operational policy, and configuration PRs, no
   ]) {
     assert.ok(skill.includes(rule), `SKILL.md 缺少「${rule}」`);
   }
-  assert.ok(!skill.includes("Create every worktree under the current repository's `.worktree/` directory"));
+  assert.doesNotMatch(skill, /\b(?:every|each|all)\b[^.\n]*`\.worktrees?\/`/i);
+  assert.ok(skill.includes("do not use an unignored or external path"));
 
   const readme = readFileSync(new URL("README.md", repositoryRoot), "utf8");
   assert.ok(readme.includes("任何含程式碼、測試、腳本、操作型 agent 指示／政策，或任何設定變更的 PR"));

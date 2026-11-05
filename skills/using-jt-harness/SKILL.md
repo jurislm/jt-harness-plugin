@@ -32,8 +32,9 @@ Repository-specific commands, environment rules, data-safety boundaries, and tes
 
 - Make engineering changes in a task-specific branch and isolated worktree. Keep the main/root checkout read-only for task development: when clean and safe, update it with `git pull --ff-only`; do not edit task files, commit task changes, or directly push development changes from it. Reuse only a worktree explicitly attached to this task.
 - Use a repository-local path that the target repository already ignores for worktrees. Preserve its established name. Examples include `.worktree/` and `.worktrees/`.
-- Keep the worktree inside the repository. Before creating it, confirm that the selected path is ignored and its resolved location stays beneath the repository root. Resolve symlinks when checking the path. Confirm that the destination does not exist.
-- Prefer the host-managed worktree tool only when it can use the selected path. Otherwise, run `git worktree add <ignored-worktree-directory>/<branch-slug> -b <unique-branch>`.
+- Use a single path component as the worktree directory name. Do not include path separators or use `.` or `..`.
+- Keep the worktree inside the repository. Before creating it, build the complete destination from the ignored path and task slug. Confirm that the complete destination is ignored and does not exist. Resolve existing parent components and symlinks, and confirm that the destination stays beneath the repository root.
+- Prefer the host-managed worktree tool only when it can use the selected path. Otherwise, run `git worktree add <ignored-worktree-directory>/<task-slug> -b <unique-branch>`.
 - If the repository has no configured, ignored worktree path, stop and report the blocker. Do not modify the root checkout or `.gitignore`, and do not use an unignored or external path.
 - If the platform actually denies worktree creation or no usable route exists, stop and report the exact operation. Never fall back to writing in the main/root checkout or bypass platform restrictions.
 
