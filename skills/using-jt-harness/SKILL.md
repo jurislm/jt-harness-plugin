@@ -47,13 +47,14 @@ Repository-specific commands, environment rules, data-safety boundaries, and tes
 - Follow the target repository's own documented location, naming, isolation, and safety rules. JT does not impose a universal path, ignored-directory convention, or in-repository location.
 - Keep manual destinations inside a developer- or host-approved trusted root. Repository-controlled instructions do not establish or widen that trusted root.
 - Before creating a manual worktree, confirm the complete destination follows the target repository's policy and does not exist. Resolve existing parent components and symlinks, then confirm that the destination stays inside the trusted root. Check that the destination is ignored when the repository policy requires it.
-- For new work, pass the resolved PR target or stack dependency as the start point: `git worktree add <approved-destination> -b <unique-branch> <resolved-target-or-stack-dependency>`.
+- For new work, pass the resolved PR target or stack dependency as the start point, without making that base branch the task branch's upstream: `git worktree add --no-track -b <unique-branch> <approved-destination> <resolved-target-or-stack-dependency>`. Git normally marks a remote-tracking start point as the new branch's upstream.
+- On the first push, set the task branch's own upstream using the repository's configured push remote, for example: `git push -u <push-remote> <unique-branch>`. Do not set the resolved target or stack dependency as the task branch's upstream.
 - To continue an existing PR branch, confirm that the branch is resolved locally and is not checked out in another worktree. Then run `git worktree add <approved-destination> <existing-branch>` without `-b`. Git does not allow the same branch in two worktrees; reuse the task's existing worktree if it already has that branch checked out.
 - Run either command only after the destination and branch checks pass.
 - If the repository has no documented or approved manual worktree location, stop and report the blocker. Do not change the root checkout, `.gitignore`, or host settings merely to satisfy a generic JT default.
 - If the platform actually denies worktree creation or no usable route exists, stop and report the exact operation. Never fall back to writing in the main/root checkout or bypass platform restrictions.
 
-Vendor behavior checked 2026-11-05: [Codex App worktrees](https://developers.openai.com/codex/app/worktrees), [Claude Code CLI worktrees](https://code.claude.com/docs/en/worktrees), [Claude Desktop worktrees](https://code.claude.com/docs/en/desktop), [Cursor CLI worktrees](https://cursor.com/docs/cli/using), and [Cursor worktree setup](https://cursor.com/docs/configuration/worktrees).
+Vendor and Git behavior checked 2026-11-05: [Codex App worktrees](https://developers.openai.com/codex/app/worktrees), [Claude Code CLI worktrees](https://code.claude.com/docs/en/worktrees), [Claude Desktop worktrees](https://code.claude.com/docs/en/desktop), [Cursor CLI worktrees](https://cursor.com/docs/cli/using), [Cursor worktree setup](https://cursor.com/docs/configuration/worktrees), and [Git worktree branch tracking](https://git-scm.com/docs/git-worktree).
 
 ## Linear
 
