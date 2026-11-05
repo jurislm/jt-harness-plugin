@@ -58,14 +58,35 @@ test("Pstack is required for code, operational policy, and configuration PRs, no
     "Use only capabilities exposed by the current host",
     "Confirm it fails for the intended reason",
     "git worktree add",
-    "Create every worktree under the current repository's `.worktree/` directory",
-    "including worktrees created by host-managed tools",
-    "confirm `.worktree/` is listed in `.gitignore`",
+    "Use a repository-local path that the target repository already ignores for worktrees",
+    "Preserve its established name",
+    "Examples include `.worktree/` and `.worktrees/`",
+    "Use a single path component as the worktree directory name",
+    "Do not include path separators or use `.` or `..`",
+    "Keep the worktree inside the repository",
+    "build the complete destination from the ignored path and task slug",
+    "Confirm that the complete destination is ignored and does not exist",
+    "Resolve existing parent components and symlinks, and confirm that the destination stays beneath the repository root",
+    "Prefer the host-managed worktree tool only when it can use the selected path",
+    "Otherwise, run `git worktree add <ignored-worktree-directory>/<task-slug> -b <unique-branch>`",
+    "If the repository has no configured, ignored worktree path, stop and report the blocker",
+    "Do not modify the root checkout or `.gitignore`",
     "main/root checkout read-only",
     "Do not add comments to code, tests, scripts, or configuration",
   ]) {
     assert.ok(skill.includes(rule), `SKILL.md 缺少「${rule}」`);
   }
+  const mandatoryWorktreePath = /\b(?:every|each|all)\s+(?:(?:[\w'-]+)\s+){0,2}worktrees?\b[^.!?\n]*`\.worktrees?\/`|`\.worktrees?\/`[^.!?\n]*\b(?:every|each|all)\s+(?:(?:[\w'-]+)\s+){0,2}worktrees?\b/i;
+  assert.doesNotMatch(skill, mandatoryWorktreePath);
+  assert.doesNotMatch("Each repo may use its own `.worktrees/` path.", mandatoryWorktreePath);
+  for (const policy of [
+    "Create every worktree under `.worktree/`.",
+    "Use `.worktrees/` for every worktree.",
+    "All task worktrees must use `.worktree/`.",
+  ]) {
+    assert.match(policy, mandatoryWorktreePath, `應拒絕固定 worktree 路徑規則：「${policy}」`);
+  }
+  assert.ok(skill.includes("do not use an unignored or external path"));
 
   const readme = readFileSync(new URL("README.md", repositoryRoot), "utf8");
   assert.ok(readme.includes("任何含程式碼、測試、腳本、操作型 agent 指示／政策，或任何設定變更的 PR"));
