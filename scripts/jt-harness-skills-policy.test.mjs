@@ -58,35 +58,35 @@ test("Pstack is required for code, operational policy, and configuration PRs, no
     "Use only capabilities exposed by the current host",
     "Confirm it fails for the intended reason",
     "git worktree add",
-    "Use a repository-local path that the target repository already ignores for worktrees",
-    "Preserve its established name",
-    "Examples include `.worktree/` and `.worktrees/`",
-    "Use a single path component as the worktree directory name",
-    "Do not include path separators or use `.` or `..`",
-    "Keep the worktree inside the repository",
-    "build the complete destination from the ignored path and task slug",
-    "Confirm that the complete destination is ignored and does not exist",
-    "Resolve existing parent components and symlinks, and confirm that the destination stays beneath the repository root",
-    "Prefer the host-managed worktree tool only when it can use the selected path",
-    "Otherwise, run `git worktree add <ignored-worktree-directory>/<task-slug> -b <unique-branch>`",
-    "If the repository has no configured, ignored worktree path, stop and report the blocker",
-    "Do not modify the root checkout or `.gitignore`",
+    "use its actual worktree path, working directory, and Git metadata",
+    "create another worktree inside it",
+    "Do not relocate, delete, or recreate an existing tool-managed worktree",
+    "Treat a detached `HEAD` as a valid initial state when the host reports it as a managed worktree",
+    "Claude Code CLI",
+    "`WorktreeCreate` hook",
+    "Claude Desktop",
+    "Cursor",
+    "`.cursor/worktrees.json` configures worktree setup commands, not the worktree root",
+    "Follow the target repository's own documented location, naming, isolation, and safety rules",
+    "JT does not impose a universal path, ignored-directory convention, or in-repository location",
+    "confirm the complete destination follows that policy and does not exist",
+    "Resolve existing parent components and symlinks",
+    "validate containment and ignore status when the repository policy requires them",
+    "Run `git worktree add <approved-destination> -b <unique-branch>` only after those checks pass",
+    "If the repository has no documented or approved manual worktree location, stop and report the blocker",
+    "Do not change the root checkout, `.gitignore`, or host settings merely to satisfy a generic JT default",
     "main/root checkout read-only",
     "Do not add comments to code, tests, scripts, or configuration",
   ]) {
     assert.ok(skill.includes(rule), `SKILL.md 缺少「${rule}」`);
   }
-  const mandatoryWorktreePath = /\b(?:every|each|all)\s+(?:(?:[\w'-]+)\s+){0,2}worktrees?\b[^.!?\n]*`\.worktrees?\/`|`\.worktrees?\/`[^.!?\n]*\b(?:every|each|all)\s+(?:(?:[\w'-]+)\s+){0,2}worktrees?\b/i;
-  assert.doesNotMatch(skill, mandatoryWorktreePath);
-  assert.doesNotMatch("Each repo may use its own `.worktrees/` path.", mandatoryWorktreePath);
-  for (const policy of [
-    "Create every worktree under `.worktree/`.",
-    "Use `.worktrees/` for every worktree.",
-    "All task worktrees must use `.worktree/`.",
-  ]) {
-    assert.match(policy, mandatoryWorktreePath, `應拒絕固定 worktree 路徑規則：「${policy}」`);
-  }
-  assert.ok(skill.includes("do not use an unignored or external path"));
+  const toolManagedWorktrees = skill.split("## Tool-managed worktrees")[1]?.split("## Manual Git worktrees")[0];
+  const manualWorktrees = skill.split("## Manual Git worktrees")[1]?.split("## Linear")[0];
+  const worktreeSection = skill.split("## Worktrees")[1]?.split("## Linear")[0];
+  assert.ok(toolManagedWorktrees, "SKILL.md 必須區分工具管理的 worktree 規範");
+  assert.ok(manualWorktrees, "SKILL.md 必須區分手動 Git worktree 規範");
+  assert.ok(worktreeSection, "SKILL.md 必須提供 worktree 規範");
+  assert.doesNotMatch(worktreeSection, /\.worktrees?\//i);
 
   const readme = readFileSync(new URL("README.md", repositoryRoot), "utf8");
   assert.ok(readme.includes("任何含程式碼、測試、腳本、操作型 agent 指示／政策，或任何設定變更的 PR"));

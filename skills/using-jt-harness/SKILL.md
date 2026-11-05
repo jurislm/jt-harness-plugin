@@ -31,12 +31,26 @@ Repository-specific commands, environment rules, data-safety boundaries, and tes
 ## Worktrees
 
 - Make engineering changes in a task-specific branch and isolated worktree. Keep the main/root checkout read-only for task development: when clean and safe, update it with `git pull --ff-only`; do not edit task files, commit task changes, or directly push development changes from it. Reuse only a worktree explicitly attached to this task.
-- Use a repository-local path that the target repository already ignores for worktrees. Preserve its established name. Examples include `.worktree/` and `.worktrees/`.
-- Use a single path component as the worktree directory name. Do not include path separators or use `.` or `..`.
-- Keep the worktree inside the repository. Before creating it, build the complete destination from the ignored path and task slug. Confirm that the complete destination is ignored and does not exist. Resolve existing parent components and symlinks, and confirm that the destination stays beneath the repository root.
-- Prefer the host-managed worktree tool only when it can use the selected path. Otherwise, run `git worktree add <ignored-worktree-directory>/<task-slug> -b <unique-branch>`.
-- If the repository has no configured, ignored worktree path, stop and report the blocker. Do not modify the root checkout or `.gitignore`, and do not use an unignored or external path.
+
+### Tool-managed worktrees
+
+- When the host provides a managed worktree, use its actual worktree path, working directory, and Git metadata. Do not infer the managed path from repository-local rules or create another worktree inside it.
+- Treat a detached `HEAD` as a valid initial state when the host reports it as a managed worktree. If the task needs a branch for commits, create or switch to that branch in the same worktree.
+- Do not relocate, delete, or recreate an existing tool-managed worktree, or change host settings to match repository-local preferences. If the host path or operation is unavailable, report the exact blocker before choosing another permitted workflow.
+- **Codex App:** use the Worktree root configured in Settings > Worktrees. The default is `$CODEX_HOME/worktrees`; managed worktrees can start at detached `HEAD`.
+- **Claude Code CLI:** use `claude --worktree` when the CLI creates the task worktree. Its default is `.claude/worktrees/<name>`; if a `WorktreeCreate` hook is configured, use the path the hook returns.
+- **Claude Desktop:** use the path selected by Desktop. For local sessions, Worktree location is configured in Settings > Code or Settings > Claude Code. For SSH sessions, the connection's Worktree folder takes precedence over remote `worktree.location`, which takes precedence over `<project-root>/.claude/worktrees/`; Windows remote sessions always use the default.
+- **Cursor:** use the actual path provided by Cursor. Cursor CLI documents `~/.cursor/worktrees/<repo>/<name>` as its default. `.cursor/worktrees.json` configures worktree setup commands, not the worktree root.
+
+### Manual Git worktrees
+
+- Follow the target repository's own documented location, naming, isolation, and safety rules. JT does not impose a universal path, ignored-directory convention, or in-repository location.
+- Before creating a manual worktree, confirm the complete destination follows that policy and does not exist. Resolve existing parent components and symlinks to confirm the destination is the intended location; validate containment and ignore status when the repository policy requires them.
+- Run `git worktree add <approved-destination> -b <unique-branch>` only after those checks pass.
+- If the repository has no documented or approved manual worktree location, stop and report the blocker. Do not change the root checkout, `.gitignore`, or host settings merely to satisfy a generic JT default.
 - If the platform actually denies worktree creation or no usable route exists, stop and report the exact operation. Never fall back to writing in the main/root checkout or bypass platform restrictions.
+
+Vendor behavior checked 2026-11-05: [Codex App worktrees](https://developers.openai.com/codex/app/worktrees), [Claude Code CLI worktrees](https://code.claude.com/docs/en/worktrees), [Claude Desktop worktrees](https://code.claude.com/docs/en/desktop), [Cursor CLI worktrees](https://cursor.com/docs/cli/using), and [Cursor worktree setup](https://cursor.com/docs/configuration/worktrees).
 
 ## Linear
 
