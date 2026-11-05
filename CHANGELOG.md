@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.4.7](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.6...v2.4.7) (2026-11-05)
+
+
+### 🐛 Bug Fixes
+
+* **review:** limit Pstack to code and policy PRs ([411e1f4](https://github.com/jurislm/jt-harness-plugin/commit/411e1f4cedb896efcaf75353647b6a3eb92e1653))
+
+
+### 📚 Documentation
+
+* **jt-harness:** define shared development workflow ([#58](https://github.com/jurislm/jt-harness-plugin/issues/58)) ([84ebebd](https://github.com/jurislm/jt-harness-plugin/commit/84ebebdaec1f223fcf940c45cfc4dbf86444e21f))
+
 ## [2.4.6](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.5...v2.4.6) (2026-10-31)
 
 
