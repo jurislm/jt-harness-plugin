@@ -46,7 +46,9 @@ Repository-specific commands, environment rules, data-safety boundaries, and tes
 
 - Follow the target repository's own documented location, naming, isolation, and safety rules. JT does not impose a universal path, ignored-directory convention, or in-repository location.
 - Before creating a manual worktree, confirm the complete destination follows that policy and does not exist. Resolve existing parent components and symlinks to confirm the destination is the intended location; validate containment and ignore status when the repository policy requires them.
-- Run `git worktree add <approved-destination> -b <unique-branch>` only after those checks pass.
+- For new work, pass the resolved PR target or stack dependency as the start point: `git worktree add <approved-destination> -b <unique-branch> <resolved-target-or-stack-dependency>`.
+- To continue an existing PR branch, confirm that the branch is resolved locally and is not checked out in another worktree. Then run `git worktree add <approved-destination> <existing-branch>` without `-b`. Git does not allow the same branch in two worktrees; reuse the task's existing worktree if it already has that branch checked out.
+- Run either command only after the destination and branch checks pass.
 - If the repository has no documented or approved manual worktree location, stop and report the blocker. Do not change the root checkout, `.gitignore`, or host settings merely to satisfy a generic JT default.
 - If the platform actually denies worktree creation or no usable route exists, stop and report the exact operation. Never fall back to writing in the main/root checkout or bypass platform restrictions.
 
