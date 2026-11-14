@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.10](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.9...v2.4.10) (2026-11-14)
+
+
+### 🐛 Bug Fixes
+
+* **review:** submit complete scope before evidence-based splitting ([#63](https://github.com/jurislm/jt-harness-plugin/issues/63)) ([70bb2ca](https://github.com/jurislm/jt-harness-plugin/commit/70bb2ca78af32879b0d28b235455094f281a9d67))
+
 ## [2.4.9](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.8...v2.4.9) (2026-11-05)
 
 
