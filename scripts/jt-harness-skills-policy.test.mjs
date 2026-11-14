@@ -187,12 +187,13 @@ test("JT Harness 规定一次审查、CodeRabbit 退路和自动合并条件", (
   assert.ok(!/CodeRabbit CLI/.test(skill), "SKILL.md 不應保留已廢除的 CodeRabbit CLI 退路");
 });
 
-test("size policy distinguishes internal caps and fails incomplete reviews closed", () => {
+test("size policy submits complete scope first and fails incomplete reviews closed", () => {
   for (const rule of [
-    "20 changed paths", "100 KiB (102400 bytes)",
+    "complete, coherent intended PR scope first", "JT imposes no default size caps",
+    "Explicit repository limits remain binding", "splitting must not bypass quota limits",
     "When a repository defines a line limit, compliance with that limit remains mandatory",
     "If actual size causes a skipped or incomplete review",
-    "not vendor caps", "actual PR target merge-base to HEAD", "Splitting commits",
+    "actual PR target merge-base to HEAD", "Splitting commits",
     "Recompute after stack rebase", "preserve integration validation",
     "150 for Free/Essentials", "300 for Team/Advanced/Enterprise", "100–300 for OSS",
     "300 or more changed files", "Unpublished does not mean unlimited",
