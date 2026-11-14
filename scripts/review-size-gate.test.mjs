@@ -1,27 +1,27 @@
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { assessSize, parseNumstat, measureReview } from "./review-size-gate.mjs";
 
-test("bounded dimensions stay enforced and line count requires separate review coverage", () => {
+test("explicit repository dimensions stay enforced without default caps", () => {
   const exact = { changedPaths: 20, changedLines: 500, patchBytes: 102400 };
   assert.equal(assessSize(exact).pass, true);
   assert.equal(assessSize({ ...exact, changedLines: 615 }).pass, true);
   assert.equal(assessSize(exact).requiresCoverageVerification, true);
   assert.deepEqual(assessSize({ ...exact, changedLines: 615 }, { changedLines: 500 }).exceeded, ["changedLines"]);
   for (const dimension of ["changedPaths", "patchBytes"]) {
-    assert.deepEqual(assessSize({ ...exact, [dimension]: exact[dimension] + 1 }).exceeded, [dimension]);
+    assert.deepEqual(assessSize({ ...exact, [dimension]: exact[dimension] + 1 }, { [dimension]: exact[dimension] }).exceeded, [dimension]);
   }
 });
 
-test("repository limits can tighten but never relax the defaults", () => {
+test("repository limits accept positive safe integers and reject malformed values", () => {
   assert.equal(assessSize({ changedPaths: 3, changedLines: 0, patchBytes: 0 }, { changedPaths: 2 }).pass, false);
-  for (const value of [21, 0, -1, 1.5, NaN]) {
-    assert.throws(() => assessSize({}, { changedPaths: value }));
+  for (const value of [0, -1, 1.5, NaN]) {
+    assert.throws(() => assessSize({ changedPaths: 0, changedLines: 0, patchBytes: 0 }, { changedPaths: value }));
   }
   assert.throws(() => assessSize({}, { unknown: 1 }));
   assert.throws(() => assessSize({ changedPaths: 0, changedLines: 0, patchBytes: 0 }, []));
@@ -149,5 +149,36 @@ test("real Git numstat preserves rename and deletion with whitespace without fix
     assert.ok(coverage.some((entry) => entry.paths.some((path) => path.endsWith("binary file")) && entry.binary));
   } finally {
     rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("CLI and PR workflow accept complete scope above former caps and enforce explicit limits", () => {
+  const { repo, git } = createHistoryRepo();
+  try {
+    const base = git("rev-parse", "HEAD");
+    for (let index = 0; index < 21; index++) writeFileSync(join(repo, `scope-${index}.txt`), "x".repeat(6000));
+    git("add", ".");
+    git("commit", "-q", "-m", "complete scope");
+    const head = git("rev-parse", "HEAD");
+    const script = fileURLToPath(new URL("./review-size-gate.mjs", import.meta.url));
+    const invoke = (limits) => spawnSync(process.execPath, [script, base, head, ...limits], { cwd: repo });
+    const complete = invoke([]);
+    assert.equal(complete.status, 0);
+    const report = JSON.parse(complete.stdout);
+    assert.equal(report.changedPaths, 21);
+    assert.ok(report.patchBytes > 102400);
+    assert.equal(report.requiresCoverageVerification, true);
+    const restricted = invoke(['{"changedPaths":20}']);
+    assert.equal(restricted.status, 1);
+    assert.deepEqual(JSON.parse(restricted.stdout).exceeded, ["changedPaths"]);
+    const workflow = readFileSync(new URL("../.github/workflows/review-size.yml", import.meta.url), "utf8");
+    const command = workflow.match(/^\s+run: (.+)$/m)[1].replace("scripts/review-size-gate.mjs", JSON.stringify(script));
+    const ci = spawnSync("bash", ["-e", "-c", command], {
+      cwd: repo, env: { ...process.env, PR_BASE_SHA: base, PR_HEAD_SHA: head },
+    });
+    assert.equal(ci.status, 0);
+    assert.deepEqual(JSON.parse(ci.stdout), report);
+  } finally {
+    rmSync(repo, { recursive: true, force: true });
   }
 });
