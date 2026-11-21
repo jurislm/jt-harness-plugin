@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.11](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.10...v2.4.11) (2026-11-21)
+
+
+### 🐛 Bug Fixes
+
+* remove Pstack and Superpowers dependencies from JT Harness (JUR-1114) ([#66](https://github.com/jurislm/jt-harness-plugin/issues/66)) ([dc41775](https://github.com/jurislm/jt-harness-plugin/commit/dc41775f25c9be976d514082a550a5b554b104d9))
+
 ## [2.4.10](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.9...v2.4.10) (2026-11-14)
 
 
