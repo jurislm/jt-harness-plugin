@@ -10,7 +10,10 @@ steps:
       GITHUB_API_TOKEN:
         from_secret: personal_access_tokens_fine_grained_tokens_jurislm
     commands:
-      - npx --yes release-please@17.10.4 github-release --token=$GITHUB_API_TOKEN --repo-url=https://github.com/jurislm/jt-harness-plugin --target-branch=main --config-file=release-please-config.json --manifest-file=.release-please-manifest.json
+      - |
+        set -eu
+        repo_url="$(node scripts/release-pr-auto-merge.mjs --repository-url)"
+        npx --yes release-please@17.10.4 github-release --token="$GITHUB_API_TOKEN" --repo-url="$repo_url" --target-branch=main --config-file=release-please-config.json --manifest-file=.release-please-manifest.json
   - name: release-pr
     image: node:22.22.2-bookworm-slim
     depends_on:
@@ -19,4 +22,7 @@ steps:
       GITHUB_API_TOKEN:
         from_secret: personal_access_tokens_fine_grained_tokens_jurislm
     commands:
-      - npx --yes release-please@17.10.4 release-pr --token=$GITHUB_API_TOKEN --repo-url=https://github.com/jurislm/jt-harness-plugin --target-branch=main --config-file=release-please-config.json --manifest-file=.release-please-manifest.json
+      - |
+        set -eu
+        repo_url="$(node scripts/release-pr-auto-merge.mjs --repository-url)"
+        npx --yes release-please@17.10.4 release-pr --token="$GITHUB_API_TOKEN" --repo-url="$repo_url" --target-branch=main --config-file=release-please-config.json --manifest-file=.release-please-manifest.json

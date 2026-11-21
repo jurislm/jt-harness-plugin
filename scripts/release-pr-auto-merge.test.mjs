@@ -2,9 +2,19 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
-import { runReleasePrAutoMerge } from "./release-pr-auto-merge.mjs";
+import { releaseRepositoryUrl, runReleasePrAutoMerge } from "./release-pr-auto-merge.mjs";
 
 const REPOSITORY = "jurislm/jt-harness-plugin";
+const REPOSITORY_API_PATH = "/repositories/1377922823";
+function repo(owner = "jurislm", id = 1377922823, ownerId = 273012487) {
+  return {
+    id,
+    name: "jt-harness-plugin",
+    full_name: `${owner}/jt-harness-plugin`,
+    owner: { id: ownerId, login: owner, type: "Organization" },
+    default_branch: "main",
+  };
+}
 const RELEASE_BRANCH = "release-please--branches--main";
 const OLD_BASE = "a".repeat(40);
 const OLD_HEAD = "b".repeat(40);
@@ -35,7 +45,7 @@ const FILE_TEXT = {
   ...Object.fromEntries(VERSION_FILES.map((path) => [path, [withVersion(path, BASE_VERSION), withVersion(path, VERSION)]])),
 };
 
-function pull(baseSha, headSha, changedFiles) {
+function pull(baseSha, headSha, changedFiles, repository, headRepo) {
   return {
     number: 40,
     state: "open",
@@ -43,8 +53,8 @@ function pull(baseSha, headSha, changedFiles) {
     title: `chore(main): release ${VERSION}`,
     body: ":robot: I have created a release *beep* *boop*\n\nThis PR was generated with [Release Please](https://github.com/googleapis/release-please).",
     user: { login: "terry90918" },
-    base: { ref: "main", sha: baseSha, repo: { full_name: REPOSITORY } },
-    head: { ref: RELEASE_BRANCH, sha: headSha, repo: { full_name: REPOSITORY } },
+    base: { ref: "main", sha: baseSha, repo: repository },
+    head: { ref: RELEASE_BRANCH, sha: headSha, repo: headRepo },
     changed_files: changedFiles,
     mergeable: true,
     mergeable_state: "clean",
@@ -62,23 +72,40 @@ function fakeGitHub({
   mainSha = CI_SHA,
   files = RELEASE_FILES,
   pendingStatusPolls = 0,
+  repository = repo(),
+  headRepo = repository,
+  rotatedRepository,
+  mainAfterIdentity,
+  redirect = false,
 } = {}) {
   const requests = [];
-  let current = pull(prBase, OLD_HEAD, files.length);
+  let current = pull(prBase, OLD_HEAD, files.length, repository, headRepo);
   let statusPolls = 0;
+  let identityRequests = 0;
   const fetchImpl = async (input, init = {}) => {
     const url = new URL(input);
     const method = init.method ?? "GET";
-    const path = url.pathname.replace(`/repos/${REPOSITORY}`, "");
+    const path = url.pathname.replace(REPOSITORY_API_PATH, "");
     const body = typeof init.body === "string" ? init.body : "";
     requests.push({ method, path, body });
+    assert.equal(url.origin, "https://api.github.com");
+    assert.equal(init.redirect, "error");
+    if (!url.pathname.startsWith(REPOSITORY_API_PATH)) return json({}, 404);
+    if (method === "GET" && path === "") {
+      identityRequests += 1;
+      if (redirect) return new Response("", { status: 302, headers: { location: "https://github.com/" } });
+      return json(identityRequests > 1 && rotatedRepository ? rotatedRepository : repository);
+    }
     const head = current.head.sha;
-    if (method === "GET" && path === "/pulls") return json([current]);
+    if (method === "GET" && path === "/pulls") {
+      assert.equal(url.searchParams.get("head"), `${repository.owner.login}:${RELEASE_BRANCH}`);
+      return json([current]);
+    }
     if (method === "GET" && path === "/pulls/40") return json(current);
     if (method === "GET" && path.startsWith("/compare/")) return json({ status: relation });
     if (method === "PUT" && path === "/pulls/40/update-branch") {
       if (JSON.parse(body).expected_head_sha !== head) return json({}, 422);
-      if (update !== "never") current = pull(update.baseSha, update.headSha, files.length);
+      if (update !== "never") current = pull(update.baseSha, update.headSha, files.length, repository, headRepo);
       return json({ message: "Updating pull request branch." }, 202);
     }
     if (method === "GET" && path === "/pulls/40/files") {
@@ -100,7 +127,7 @@ function fakeGitHub({
         ],
       });
     }
-    if (method === "GET" && path === "/git/ref/heads/main") return json({ object: { sha: mainSha } });
+    if (method === "GET" && path === "/git/ref/heads/main") return json({ object: { sha: identityRequests > 1 && mainAfterIdentity ? mainAfterIdentity : mainSha } });
     if (method === "PUT" && path === "/pulls/40/merge") return json({ merged: true, sha: MERGE_SHA });
     return json({}, 404);
   };
@@ -154,4 +181,66 @@ test("waits for Woodpecker statuses on the updated head before merging", async (
   const gitHub = fakeGitHub({ prBase: OLD_BASE, pendingStatusPolls: 100 });
   assert.deepEqual(await run(gitHub), { status: "merged", pullNumber: 40, mergeSha: MERGE_SHA });
   assert.equal(JSON.parse(gitHub.merges()[0].body).sha, NEW_HEAD);
+});
+
+for (const owner of ["jurislm", "r-seriesx"]) {
+  test(`resolves and merges for canonical owner ${owner}`, async () => {
+    const gitHub = fakeGitHub({ repository: repo(owner) });
+    assert.equal(await releaseRepositoryUrl({ token: "token", commitSha: CI_SHA, fetchImpl: gitHub.fetchImpl }), `https://github.com/${owner}/jt-harness-plugin`);
+    assert.equal((await run(gitHub)).status, "merged");
+    assert.equal(gitHub.merges().length, 1);
+  });
+}
+
+for (const [name, inputs] of [
+  ["wrong GitHub repository ID", { repository: repo("jurislm", 42) }],
+  ["wrong GitHub organization ID", { repository: repo("jurislm", 1377922823, 42) }],
+  ["unexpected owner slug", { repository: repo("other-org") }],
+  ["metadata redirect", { redirect: true }],
+  ["foreign PR head", { headRepo: repo("jurislm", 42) }],
+  ["repository identity changed before merge", { rotatedRepository: repo("r-seriesx") }],
+  ["stale main before branch update", { prBase: OLD_BASE, mainSha: NEWER_MAIN }],
+]) {
+  test(`does not write for ${name}`, async () => {
+    const gitHub = fakeGitHub(inputs);
+    if (name === "stale main before branch update") {
+      assert.deepEqual(await run(gitHub), { status: "no-op" });
+    } else {
+      await assert.rejects(run(gitHub), /identity|repository mismatch|302/u);
+    }
+    assert.equal(gitHub.updates().length, 0);
+    assert.equal(gitHub.merges().length, 0);
+  });
+}
+
+test("does not emit a release URL for a stale main or changing identity", async () => {
+  for (const [inputs, failure] of [
+    [{ mainSha: NEWER_MAIN }, /main changed/u],
+    [{ rotatedRepository: repo("r-seriesx") }, /identity changed/u],
+  ]) {
+    const gitHub = fakeGitHub(inputs);
+    await assert.rejects(releaseRepositoryUrl({ token: "token", commitSha: CI_SHA, fetchImpl: gitHub.fetchImpl }), failure);
+    assert.equal(gitHub.merges().length + gitHub.updates().length, 0);
+  }
+});
+
+test("both pinned Release Please operations require the verified URL", () => {
+  const workflow = readFileSync(".woodpecker/release.yml", "utf8");
+  for (const operation of ["github-release", "release-pr"]) {
+    assert.ok(workflow.includes(
+      'set -eu\n        repo_url="$(node scripts/release-pr-auto-merge.mjs --repository-url)"\n' +
+      '        npx --yes release-please@17.10.4 ' + operation +
+      ' --token="$GITHUB_API_TOKEN" --repo-url="$repo_url" --target-branch=main',
+    ));
+  }
+});
+
+test("a main advance during identity revalidation prevents either write", async () => {
+  for (const prBase of [OLD_BASE, CI_SHA]) {
+    const gitHub = fakeGitHub({ prBase, mainAfterIdentity: NEWER_MAIN });
+    assert.deepEqual(await run(gitHub), { status: "no-op" });
+    assert.equal(gitHub.updates().length + gitHub.merges().length, 0);
+  }
+  const gitHub = fakeGitHub({ mainAfterIdentity: NEWER_MAIN });
+  await assert.rejects(releaseRepositoryUrl({ token: "token", commitSha: CI_SHA, fetchImpl: gitHub.fetchImpl }), /main changed/u);
 });
