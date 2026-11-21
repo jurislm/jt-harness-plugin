@@ -7,10 +7,10 @@
     <meta property="og:title" content="JT Harness Plugin — JurisLM">
     <meta property="og:description" content="為軟體工程任務建立清楚的交付路徑。">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://jurislm.github.io/jt-harness-plugin/">
+    <meta property="og:url" content="https://r-seriesx.github.io/jt-harness-plugin/">
     <title>JT Harness Plugin — JurisLM</title>
-    <link rel="canonical" href="https://jurislm.github.io/jt-harness-plugin/">
-    <link rel="alternate" hreflang="en" href="https://jurislm.github.io/jt-harness-plugin/en/">
+    <link rel="canonical" href="https://r-seriesx.github.io/jt-harness-plugin/">
+    <link rel="alternate" hreflang="en" href="https://r-seriesx.github.io/jt-harness-plugin/en/">
     <link rel="icon" href="assets/jt-harness.png">
     <link rel="stylesheet" href="styles.css">
   </head>
@@ -26,7 +26,7 @@
         <a href="#install">安裝</a>
         <a href="#scope">適用範圍</a>
         <a class="language-link" href="en/" lang="en">EN</a>
-        <a class="nav-cta" href="https://github.com/jurislm/jt-harness-plugin">GitHub <span aria-hidden="true">↗</span></a>
+        <a class="nav-cta" href="https://github.com/r-seriesx/jt-harness-plugin">GitHub <span aria-hidden="true">↗</span></a>
       </nav>
     </header>
 
@@ -38,7 +38,7 @@
           <p class="hero-lead">JT Harness Plugin 為 Codex 與 Cursor 提供一個自動觸發的軟體工程交付 Skill，涵蓋 issue 追蹤、平台工具路由、審查與合併規則。</p>
           <div class="hero-actions">
             <a class="button button-primary" href="#install">開始安裝 <span aria-hidden="true">↓</span></a>
-            <a class="button button-secondary" href="https://github.com/jurislm/jt-harness-plugin">檢視原始碼 <span aria-hidden="true">↗</span></a>
+            <a class="button button-secondary" href="https://github.com/r-seriesx/jt-harness-plugin">檢視原始碼 <span aria-hidden="true">↗</span></a>
           </div>
           <div class="hero-meta">
             <span>CODEX</span>
@@ -109,7 +109,7 @@
               <span class="platform-name">Codex</span>
             </div>
             <p>在終端機加入 JurisLM marketplace，並安裝插件：</p>
-            <pre><code>codex plugin marketplace add https://github.com/jurislm/jt-harness-plugin --ref main
+            <pre><code>codex plugin marketplace add https://github.com/r-seriesx/jt-harness-plugin --ref main
 codex plugin add jt-harness-plugin@jurislm-jt-harness</code></pre>
             <p class="install-note">安裝或更新後，開啟新的 Codex session 以載入 Skill。</p>
           </article>
@@ -121,7 +121,7 @@ codex plugin add jt-harness-plugin@jurislm-jt-harness</code></pre>
             <ol class="cursor-steps">
               <li>開啟 <strong>Customize → Plugins</strong>。</li>
               <li>選擇 <strong>From GitHub Repository</strong>。</li>
-              <li>輸入 <code>https://github.com/jurislm/jt-harness-plugin</code> 並安裝 <code>jt-harness-plugin</code>。</li>
+              <li>輸入 <code>https://github.com/r-seriesx/jt-harness-plugin</code> 並安裝 <code>jt-harness-plugin</code>。</li>
             </ol>
             <p class="install-note">更新後重新載入 Cursor，並確認 <code>using-jt-harness</code> Skill 已出現。</p>
           </article>
@@ -133,14 +133,14 @@ codex plugin add jt-harness-plugin@jurislm-jt-harness</code></pre>
         <div class="scope-content">
           <div>
             <h2>這是一個 Skill，<br>不是另一套服務。</h2>
-            <p>JT Harness 的 Skill 會自動觸發並提供交付規則。main/root checkout 僅供任務開發唯讀：工作目錄乾淨且更新安全時，可用 <code>git pull --ff-only</code> 更新；不得在該 checkout 編輯任務檔案、提交任務變更或直接推送開發變更。<a class="inline-link" href="https://github.com/jurislm/jt-harness-plugin/blob/main/skills/using-jt-harness/SKILL.md">閱讀完整交付規則</a>。</p>
+            <p>JT Harness 的 Skill 會自動觸發並提供交付規則。main/root checkout 僅供任務開發唯讀：工作目錄乾淨且更新安全時，可用 <code>git pull --ff-only</code> 更新；不得在該 checkout 編輯任務檔案、提交任務變更或直接推送開發變更。<a class="inline-link" href="https://github.com/r-seriesx/jt-harness-plugin/blob/main/skills/using-jt-harness/SKILL.md">閱讀完整交付規則</a>。</p>
           </div>
           <ul class="scope-list">
             <li><span>✓</span> Codex 與 Cursor 的軟體工程交付規則</li>
             <li><span>✓</span> Linear 追蹤、平台 Skill 路由、審查與合併規則</li>
             <li><span>—</span> 不包含 MCP server、slash command、OAuth 或 hosted endpoint</li>
             <li><span>—</span> 不發布 npm package；版本透過 GitHub Releases 發布</li>
-            <li><span>✓</span> 授權採用 <a class="inline-link" href="https://github.com/jurislm/jt-harness-plugin/blob/main/LICENSE">MIT License</a></li>
+            <li><span>✓</span> 授權採用 <a class="inline-link" href="https://github.com/r-seriesx/jt-harness-plugin/blob/main/LICENSE">MIT License</a></li>
           </ul>
         </div>
       </section>
@@ -150,17 +150,17 @@ codex plugin add jt-harness-plugin@jurislm-jt-harness</code></pre>
           <p class="eyebrow">READY WHEN YOU ARE</p>
           <h2>把交付規則帶進下一個軟體工程任務。</h2>
         </div>
-        <a class="button button-primary" href="https://github.com/jurislm/jt-harness-plugin/releases/latest">查看最新 Release <span aria-hidden="true">↗</span></a>
+        <a class="button button-primary" href="https://github.com/r-seriesx/jt-harness-plugin/releases/latest">查看最新 Release <span aria-hidden="true">↗</span></a>
       </section>
     </main>
 
     <footer class="site-footer">
       <a class="footer-brand" href="./">JT HARNESS <span>BY JURISLM</span></a>
       <nav aria-label="相關連結">
-        <a href="https://github.com/jurislm/jt-harness-plugin">原始碼</a>
-        <a href="https://github.com/jurislm/jt-harness-plugin/releases">Releases</a>
-        <a href="https://github.com/jurislm/jt-harness-plugin/blob/main/CHANGELOG.md">Changelog</a>
-        <a href="https://github.com/jurislm/jt-harness-plugin/blob/main/README.md">README</a>
+        <a href="https://github.com/r-seriesx/jt-harness-plugin">原始碼</a>
+        <a href="https://github.com/r-seriesx/jt-harness-plugin/releases">Releases</a>
+        <a href="https://github.com/r-seriesx/jt-harness-plugin/blob/main/CHANGELOG.md">Changelog</a>
+        <a href="https://github.com/r-seriesx/jt-harness-plugin/blob/main/README.md">README</a>
       </nav>
       <p>© JurisLM · Engineering delivery guidance</p>
     </footer>

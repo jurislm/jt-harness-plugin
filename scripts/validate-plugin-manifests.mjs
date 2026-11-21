@@ -47,7 +47,7 @@ assert.equal(Object.hasOwn(plugin.extensions["com.openai"], "hooks"), false);
 const entry = marketplace.plugins.find((item) => item.name === plugin.name);
 assert.ok(entry, "marketplace must contain jt-harness-plugin");
 assert.equal(entry.source.source, "url");
-assert.equal(entry.source.url, "https://github.com/jurislm/jt-harness-plugin");
+assert.equal(entry.source.url, "https://github.com/r-seriesx/jt-harness-plugin");
 assert.equal(entry.source.ref, "main");
 assert.equal(entry.policy.installation, "AVAILABLE");
 assert.equal(entry.policy.authentication, "ON_INSTALL");

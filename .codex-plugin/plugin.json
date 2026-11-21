@@ -4,9 +4,9 @@
   "description": "Codex compatibility metadata for JT Harness engineering rules.",
   "author": {
     "name": "Terry Chen",
-    "url": "https://github.com/jurislm"
+    "url": "https://github.com/r-seriesx"
   },
-  "repository": "https://github.com/jurislm/jt-harness-plugin",
+  "repository": "https://github.com/r-seriesx/jt-harness-plugin",
   "license": "MIT",
   "skills": "./skills/",
   "interface": {
@@ -22,6 +22,6 @@
     "defaultPrompt": "Use using-jt-harness for this engineering task.",
     "composerIcon": "./assets/jt-harness.png",
     "logo": "./assets/jt-harness.png",
-    "websiteURL": "https://jurislm.github.io/jt-harness-plugin/"
+    "websiteURL": "https://r-seriesx.github.io/jt-harness-plugin/"
   }
 }
