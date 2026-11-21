@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.13](https://github.com/r-seriesx/jt-harness-plugin/compare/v2.4.12...v2.4.13) (2026-11-21)
+
+
+### 📚 Documentation
+
+* update public links to r-seriesx (JUR-1111) ([#70](https://github.com/r-seriesx/jt-harness-plugin/issues/70)) ([e974cd1](https://github.com/r-seriesx/jt-harness-plugin/commit/e974cd1a21e1ba5e2e5ee6234b41326ac39d2074))
+
 ## [2.4.12](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.11...v2.4.12) (2026-11-21)
 
 
