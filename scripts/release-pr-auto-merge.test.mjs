@@ -75,6 +75,7 @@ function fakeGitHub({
   repository = repo(),
   headRepo = repository,
   rotatedRepository,
+  mainAfterIdentity,
   redirect = false,
 } = {}) {
   const requests = [];
@@ -126,7 +127,7 @@ function fakeGitHub({
         ],
       });
     }
-    if (method === "GET" && path === "/git/ref/heads/main") return json({ object: { sha: mainSha } });
+    if (method === "GET" && path === "/git/ref/heads/main") return json({ object: { sha: identityRequests > 1 && mainAfterIdentity ? mainAfterIdentity : mainSha } });
     if (method === "PUT" && path === "/pulls/40/merge") return json({ merged: true, sha: MERGE_SHA });
     return json({}, 404);
   };
@@ -232,4 +233,14 @@ test("both pinned Release Please operations require the verified URL", () => {
       ' --token="$GITHUB_API_TOKEN" --repo-url="$repo_url" --target-branch=main',
     ));
   }
+});
+
+test("a main advance during identity revalidation prevents either write", async () => {
+  for (const prBase of [OLD_BASE, CI_SHA]) {
+    const gitHub = fakeGitHub({ prBase, mainAfterIdentity: NEWER_MAIN });
+    assert.deepEqual(await run(gitHub), { status: "no-op" });
+    assert.equal(gitHub.updates().length + gitHub.merges().length, 0);
+  }
+  const gitHub = fakeGitHub({ mainAfterIdentity: NEWER_MAIN });
+  await assert.rejects(releaseRepositoryUrl({ token: "token", commitSha: CI_SHA, fetchImpl: gitHub.fetchImpl }), /main changed/u);
 });

@@ -391,8 +391,8 @@ export async function releaseRepositoryUrl({ token, commitSha, fetchImpl = globa
   const expected = requiredSha(commitSha, "CI_COMMIT_SHA");
   const request = createGitHubClient({ token, fetchImpl, requestTimeoutMs: REQUEST_TIMEOUT_MS });
   const owner = await resolveRepositoryOwner(request);
-  if ((await readMainBranchSha(request)) !== expected) throw new Error("GitHub main changed before release");
   if ((await resolveRepositoryOwner(request)) !== owner) throw new Error("GitHub repository identity changed");
+  if ((await readMainBranchSha(request)) !== expected) throw new Error("GitHub main changed before release");
   return `https://github.com/${owner}/${REPOSITORY_NAME}`;
 }
 
@@ -524,8 +524,8 @@ export async function runReleasePrAutoMerge({
     if (relation !== "behind") {
       throw new Error(`release PR base SHA does not match the triggering Woodpecker commit (relation=${relation})`);
     }
-    if ((await readMainBranchSha(request)) !== expectedCommitSha) return { status: "no-op" };
     await assertStableRepository();
+    if ((await readMainBranchSha(request)) !== expectedCommitSha) return { status: "no-op" };
     await request(`${REPOSITORY_API_PATH}/pulls/${candidate.number}/update-branch`, {
       method: "PUT",
       body: JSON.stringify({ expected_head_sha: candidate.headSha }),
@@ -617,9 +617,9 @@ export async function runReleasePrAutoMerge({
   }
   if (!mergeable) throw new Error("release PR mergeability check timed out");
 
+  await assertStableRepository();
   const currentSha = await readMainBranchSha(request);
   if (currentSha !== expectedCommitSha) return { status: "no-op" };
-  await assertStableRepository();
 
   try {
     const mergeSha = mergeResult(
