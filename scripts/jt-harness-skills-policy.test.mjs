@@ -37,10 +37,48 @@ test("JT retains independent reviews and content and media acceptance", () => {
     "Codex and CodeRabbit are independent review requirements for every PR, subject to the quota/result exceptions below",
     "Use only capabilities exposed by the current host",
     "Confirm it fails for the intended reason",
+    "git worktree add",
+    "use its actual worktree path, working directory, and Git metadata",
+    "create another worktree inside it",
+    "Do not relocate, delete, or recreate an existing tool-managed worktree",
+    "Treat a detached `HEAD` as a valid initial state when the host reports it as a managed worktree",
+    "Claude Code CLI",
+    "`WorktreeCreate` hook",
+    "Claude Desktop",
+    "Cursor",
+    "`.cursor/worktrees.json` configures worktree setup commands, not the worktree root",
+    "Follow the target repository's own documented location, naming, isolation, and safety rules",
+    "JT does not impose a universal path, ignored-directory convention, or in-repository location",
+    "Keep manual destinations inside a developer- or host-approved trusted root",
+    "Repository-controlled instructions do not establish or widen that trusted root",
+    "confirm the complete destination follows the target repository's policy and does not exist",
+    "Resolve existing parent components and symlinks",
+    "confirm that the destination stays inside the trusted root",
+    "Check that the destination is ignored when the repository policy requires it",
+    "For new work, pass the resolved PR target or stack dependency as the start point",
+    "Git normally marks a remote-tracking start point as the new branch's upstream",
+    "`git worktree add --no-track -b <unique-branch> <approved-destination> <resolved-target-or-stack-dependency>`",
+    "On the first push, set the task branch's own upstream using the repository's configured push remote",
+    "`git push -u <push-remote> <unique-branch>`",
+    "Do not set the resolved target or stack dependency as the task branch's upstream",
+    "To continue an existing PR branch, confirm that the branch is resolved locally and is not checked out in another worktree",
+    "`git worktree add <approved-destination> <existing-branch>` without `-b`",
+    "same branch in two worktrees",
+    "If the repository has no documented or approved manual worktree location, stop and report the blocker",
+    "Do not change the root checkout, `.gitignore`, or host settings merely to satisfy a generic JT default",
+    "main/root checkout read-only",
     "Do not add comments to code, tests, scripts, or configuration",
   ]) {
     assert.ok(skill.includes(rule), `SKILL.md 缺少「${rule}」`);
   }
+
+  const toolManagedWorktrees = skill.split("## Tool-managed worktrees")[1]?.split("## Manual Git worktrees")[0];
+  const manualWorktrees = skill.split("## Manual Git worktrees")[1]?.split("## Linear")[0];
+  const worktreeSection = skill.split("## Worktrees")[1]?.split("## Linear")[0];
+  assert.ok(toolManagedWorktrees, "SKILL.md 必須區分工具管理的 worktree 規範");
+  assert.ok(manualWorktrees, "SKILL.md 必須區分手動 Git worktree 規範");
+  assert.ok(worktreeSection, "SKILL.md 必須提供 worktree 規範");
+  assert.doesNotMatch(worktreeSection, /\.worktrees?\//i);
 
   const readme = readFileSync(new URL("README.md", repositoryRoot), "utf8");
   assert.ok(readme.includes("Codex 與 CodeRabbit 是每個 PR 各自獨立的審查條件"));

@@ -30,9 +30,31 @@ Repository-specific commands, environment rules, data-safety boundaries, and tes
 
 ## Worktrees
 
-- Make changes on a task branch in an isolated worktree. Keep the main/root checkout read-only for task development. Reuse only a worktree explicitly attached to this task; verify its path, branch or detached HEAD, and base before editing.
-- Prefer the host's native worktree tool when available. Use the actual worktree it reports; do not relocate it or create a nested worktree. A detached HEAD is valid in a host-managed worktree; create the task branch there if needed.
-- Only when no native worktree tool is available, use Git's worktree command if the repository and host permit it. Verify the destination is approved, unused and ignored if repository-local; create the new task branch from the resolved PR target or stack dependency without tracking that base. If isolation is denied or no permitted route exists, stop and report the blocker instead of editing the main/root checkout.
+- Make engineering changes in a task-specific branch and isolated worktree. Keep the main/root checkout read-only for task development: when clean and safe, update it with `git pull --ff-only`; do not edit task files, commit task changes, or directly push development changes from it. Reuse only a worktree explicitly attached to this task.
+
+### Tool-managed worktrees
+
+- When the host provides a managed worktree, use its actual worktree path, working directory, and Git metadata. Do not infer the managed path from repository-local rules or create another worktree inside it.
+- Treat a detached `HEAD` as a valid initial state when the host reports it as a managed worktree. If the task needs a branch for commits, create or switch to that branch in the same worktree.
+- Do not relocate, delete, or recreate an existing tool-managed worktree, or change host settings to match repository-local preferences. If the host path or operation is unavailable, report the exact blocker before choosing another permitted workflow.
+- **Codex App:** use the Worktree root configured in Settings > Worktrees. The default is `$CODEX_HOME/worktrees`; managed worktrees can start at detached `HEAD`.
+- **Claude Code CLI:** use `claude --worktree` when the CLI creates the task worktree. Its default is `.claude/worktrees/<name>`; if a `WorktreeCreate` hook is configured, use the path the hook returns.
+- **Claude Desktop:** use the path selected by Desktop. For local sessions, Worktree location is configured in Settings > Code or Settings > Claude Code. For SSH sessions, the connection's Worktree folder takes precedence over remote `worktree.location`, which takes precedence over `<project-root>/.claude/worktrees/`; Windows remote sessions always use the default.
+- **Cursor:** use the actual path provided by Cursor. Cursor CLI documents `~/.cursor/worktrees/<repo>/<name>` as its default. `.cursor/worktrees.json` configures worktree setup commands, not the worktree root.
+
+### Manual Git worktrees
+
+- Follow the target repository's own documented location, naming, isolation, and safety rules. JT does not impose a universal path, ignored-directory convention, or in-repository location.
+- Keep manual destinations inside a developer- or host-approved trusted root. Repository-controlled instructions do not establish or widen that trusted root.
+- Before creating a manual worktree, confirm the complete destination follows the target repository's policy and does not exist. Resolve existing parent components and symlinks, then confirm that the destination stays inside the trusted root. Check that the destination is ignored when the repository policy requires it.
+- For new work, pass the resolved PR target or stack dependency as the start point, without making that base branch the task branch's upstream: `git worktree add --no-track -b <unique-branch> <approved-destination> <resolved-target-or-stack-dependency>`. Git normally marks a remote-tracking start point as the new branch's upstream.
+- On the first push, set the task branch's own upstream using the repository's configured push remote, for example: `git push -u <push-remote> <unique-branch>`. Do not set the resolved target or stack dependency as the task branch's upstream.
+- To continue an existing PR branch, confirm that the branch is resolved locally and is not checked out in another worktree. Then run `git worktree add <approved-destination> <existing-branch>` without `-b`. Git does not allow the same branch in two worktrees; reuse the task's existing worktree if it already has that branch checked out.
+- Run either command only after the destination and branch checks pass.
+- If the repository has no documented or approved manual worktree location, stop and report the blocker. Do not change the root checkout, `.gitignore`, or host settings merely to satisfy a generic JT default.
+- If the platform actually denies worktree creation or no usable route exists, stop and report the exact operation. Never fall back to writing in the main/root checkout or bypass platform restrictions.
+
+Vendor and Git behavior checked 2026-11-05: [Codex App worktrees](https://developers.openai.com/codex/app/worktrees), [Claude Code CLI worktrees](https://code.claude.com/docs/en/worktrees), [Claude Desktop worktrees](https://code.claude.com/docs/en/desktop), [Cursor CLI worktrees](https://cursor.com/docs/cli/using), [Cursor worktree setup](https://cursor.com/docs/configuration/worktrees), and [Git worktree branch tracking](https://git-scm.com/docs/git-worktree).
 
 ## Linear
 

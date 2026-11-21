@@ -8,8 +8,6 @@ JurisLM 的 Codex／Cursor Plugin，包含唯一的軟體工程交付 Skill：[`
 
 Codex 與 CodeRabbit 是每個 PR 各自獨立的審查條件，僅適用 Skill 明列的額度／無結果例外。
 
-工作樹優先沿用當前任務已隔離的工作樹，或使用宿主原生工具。只有宿主未提供原生工具且 repo 與宿主皆允許時，才使用 Git 建立工作樹。
-
 ### Codex
 
 ```bash
