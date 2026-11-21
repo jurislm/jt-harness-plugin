@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.12](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.11...v2.4.12) (2026-11-21)
+
+
+### 🐛 Bug Fixes
+
+* resolve JT Harness release repository by stable identity (JUR-1111) ([#68](https://github.com/jurislm/jt-harness-plugin/issues/68)) ([a882b14](https://github.com/jurislm/jt-harness-plugin/commit/a882b14b43797edcb54b44227a2248541fba5962))
+
 ## [2.4.11](https://github.com/jurislm/jt-harness-plugin/compare/v2.4.10...v2.4.11) (2026-11-21)
 
 
