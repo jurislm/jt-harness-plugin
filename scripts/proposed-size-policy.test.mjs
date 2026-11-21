@@ -25,6 +25,6 @@ test('size report cannot certify reviewer coverage', () => {
   const policy = readFileSync(new URL('../skills/using-jt-harness/SKILL.md', import.meta.url),'utf8');
   assert.match(policy, /skipped, incomplete, missing or quota-limited reviews never count as Pass/);
   assert.match(policy, /complete result covering current HEAD/);
-  assert.match(policy, /pstack review are independent/);
+  assert.match(policy, /Codex and CodeRabbit are independent of each other/);
   assert.match(policy, /full-project lint/);
 });
