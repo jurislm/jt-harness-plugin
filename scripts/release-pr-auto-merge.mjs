@@ -4,7 +4,11 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
-const REPOSITORY = "jurislm/jt-harness-plugin";
+const REPOSITORY_ID = 1377922823;
+const ORGANIZATION_ID = 273012487;
+const REPOSITORY_NAME = "jt-harness-plugin";
+const REPOSITORY_API_PATH = `/repositories/${REPOSITORY_ID}`;
+const OWNERS = new Set(["jurislm", "r-seriesx"]);
 const BASE_BRANCH = "main";
 const RELEASE_BRANCH = "release-please--branches--main";
 const RELEASE_AUTHOR = "terry90918";
@@ -173,7 +177,7 @@ function readTrustedReleaseContract() {
   return { changelogPath, versionFiles, allowedFiles };
 }
 
-function selectReleaseCandidate(value) {
+function selectReleaseCandidate(value, owner) {
   if (!Array.isArray(value)) throw new Error("release PR response must be an array");
   if (value.length === 0) return null;
   if (value.length !== 1) throw new Error("multiple release PR candidates found");
@@ -201,13 +205,13 @@ function selectReleaseCandidate(value) {
 
   const base = requiredRecord(pull.base, "base");
   const baseRepo = requiredRecord(base.repo, "base.repo");
-  if (baseRepo.full_name !== REPOSITORY || base.ref !== BASE_BRANCH) {
+  if (!matchesRepository(baseRepo, owner) || base.ref !== BASE_BRANCH) {
     throw new Error("release PR base identity is not allowed");
   }
 
   const head = requiredRecord(pull.head, "head");
   const headRepo = requiredRecord(head.repo, "head.repo");
-  if (headRepo.full_name !== REPOSITORY || head.ref !== RELEASE_BRANCH) {
+  if (!matchesRepository(headRepo, owner) || head.ref !== RELEASE_BRANCH) {
     throw new Error("release PR head identity is not allowed");
   }
 
@@ -328,6 +332,7 @@ function createGitHubClient({ token, fetchImpl, requestTimeoutMs }) {
       response = await fetchImpl(`${GITHUB_API}${apiPath}`, {
         ...init,
         signal: controller.signal,
+        redirect: "error",
         headers: {
           Accept: "application/vnd.github+json",
           Authorization: `Bearer ${token}`,
@@ -346,6 +351,7 @@ function createGitHubClient({ token, fetchImpl, requestTimeoutMs }) {
       clearTimeout(timeout);
     }
 
+    if (response.redirected) throw new Error("GitHub API redirected unexpectedly");
     if (!response.ok) throw new GitHubApiError(method, apiPath, response.status);
     try {
       return JSON.parse(text);
@@ -353,6 +359,41 @@ function createGitHubClient({ token, fetchImpl, requestTimeoutMs }) {
       throw new Error(`GitHub API ${method} ${apiPath.split("?")[0]} did not return valid JSON`);
     }
   };
+}
+
+function matchesRepository(value, owner) {
+  return (
+    isRecord(value) &&
+    value.id === REPOSITORY_ID &&
+    value.name === REPOSITORY_NAME &&
+    value.full_name === `${owner}/${REPOSITORY_NAME}` &&
+    isRecord(value.owner) &&
+    value.owner.id === ORGANIZATION_ID &&
+    value.owner.login === owner &&
+    value.owner.type === "Organization"
+  );
+}
+
+async function resolveRepositoryOwner(request) {
+  const value = requiredRecord(await request(REPOSITORY_API_PATH), "repository identity");
+  const owner = value.owner?.login;
+  if (!OWNERS.has(owner) || !matchesRepository(value, owner) || value.default_branch !== BASE_BRANCH) {
+    throw new Error("GitHub repository identity mismatch");
+  }
+  return owner;
+}
+
+const readMainBranchSha = async (request) =>
+  mainBranchSha(await request(`${REPOSITORY_API_PATH}/git/ref/heads/${BASE_BRANCH}`));
+
+export async function releaseRepositoryUrl({ token, commitSha, fetchImpl = globalThis.fetch } = {}) {
+  if (typeof token !== "string" || token.length === 0) throw new Error("GITHUB_API_TOKEN is required");
+  const expected = requiredSha(commitSha, "CI_COMMIT_SHA");
+  const request = createGitHubClient({ token, fetchImpl, requestTimeoutMs: REQUEST_TIMEOUT_MS });
+  const owner = await resolveRepositoryOwner(request);
+  if ((await readMainBranchSha(request)) !== expected) throw new Error("GitHub main changed before release");
+  if ((await resolveRepositoryOwner(request)) !== owner) throw new Error("GitHub repository identity changed");
+  return `https://github.com/${owner}/${REPOSITORY_NAME}`;
 }
 
 function mainBranchSha(value) {
@@ -380,7 +421,7 @@ function validateRequiredChecks(value) {
 async function waitForRequiredCheck(request, commitSha, sleep) {
   for (let attempt = 1; attempt <= MAX_MERGEABLE_ATTEMPTS; attempt += 1) {
     const value = await request(
-      `/repos/${REPOSITORY}/commits/${encodeURIComponent(commitSha)}/status`,
+      `${REPOSITORY_API_PATH}/commits/${encodeURIComponent(commitSha)}/status`,
     );
     try {
       validateRequiredChecks(value);
@@ -437,12 +478,14 @@ export async function runReleasePrAutoMerge({
 
   const contract = readTrustedReleaseContract();
   const request = createGitHubClient({ token, fetchImpl, requestTimeoutMs: timeoutMs });
-  const readMainBranchSha = async () =>
-    mainBranchSha(await request(`/repos/${REPOSITORY}/git/ref/heads/${BASE_BRANCH}`));
+  const owner = await resolveRepositoryOwner(request);
+  const assertStableRepository = async () => {
+    if ((await resolveRepositoryOwner(request)) !== owner) throw new Error("GitHub repository identity changed");
+  };
   const baseRelation = async (baseSha) => {
     const comparison = requiredRecord(
       await request(
-        `/repos/${REPOSITORY}/compare/${encodeURIComponent(expectedCommitSha)}...${encodeURIComponent(baseSha)}?per_page=1`,
+        `${REPOSITORY_API_PATH}/compare/${encodeURIComponent(expectedCommitSha)}...${encodeURIComponent(baseSha)}?per_page=1`,
       ),
       "commit comparison",
     );
@@ -452,16 +495,17 @@ export async function runReleasePrAutoMerge({
   const query = new URLSearchParams({
     state: "open",
     base: BASE_BRANCH,
-    head: `jurislm:${RELEASE_BRANCH}`,
+    head: `${owner}:${RELEASE_BRANCH}`,
     per_page: "100",
   });
   let candidate = selectReleaseCandidate(
-    await request(`/repos/${REPOSITORY}/pulls?${query.toString()}`),
+    await request(`${REPOSITORY_API_PATH}/pulls?${query.toString()}`),
+    owner,
   );
   if (!candidate) return { status: "no-op" };
 
-  let detailValue = await request(`/repos/${REPOSITORY}/pulls/${candidate.number}`);
-  const detailedCandidate = selectReleaseCandidate([detailValue]);
+  let detailValue = await request(`${REPOSITORY_API_PATH}/pulls/${candidate.number}`);
+  const detailedCandidate = selectReleaseCandidate([detailValue], owner);
   if (!detailedCandidate || detailedCandidate.number !== candidate.number) {
     throw new Error("release PR candidate changed before validation");
   }
@@ -480,7 +524,9 @@ export async function runReleasePrAutoMerge({
     if (relation !== "behind") {
       throw new Error(`release PR base SHA does not match the triggering Woodpecker commit (relation=${relation})`);
     }
-    await request(`/repos/${REPOSITORY}/pulls/${candidate.number}/update-branch`, {
+    if ((await readMainBranchSha(request)) !== expectedCommitSha) return { status: "no-op" };
+    await assertStableRepository();
+    await request(`${REPOSITORY_API_PATH}/pulls/${candidate.number}/update-branch`, {
       method: "PUT",
       body: JSON.stringify({ expected_head_sha: candidate.headSha }),
     });
@@ -488,8 +534,8 @@ export async function runReleasePrAutoMerge({
     let updated = null;
     for (let attempt = 1; attempt <= MAX_MERGEABLE_ATTEMPTS && !updated; attempt += 1) {
       if (attempt > 1) await sleep(MERGEABLE_POLL_DELAY_MS);
-      const value = await request(`/repos/${REPOSITORY}/pulls/${candidate.number}`);
-      const current = selectReleaseCandidate([value]);
+      const value = await request(`${REPOSITORY_API_PATH}/pulls/${candidate.number}`);
+      const current = selectReleaseCandidate([value], owner);
       if (!current || current.number !== candidate.number || current.title !== candidate.title) {
         throw new Error("release PR changed during branch update");
       }
@@ -500,7 +546,7 @@ export async function runReleasePrAutoMerge({
     }
     if (!updated) throw new Error("release PR branch update did not produce a new head");
     if (updated.baseSha !== expectedCommitSha) {
-      if ((await readMainBranchSha()) !== expectedCommitSha) return { status: "no-op" };
+      if ((await readMainBranchSha(request)) !== expectedCommitSha) return { status: "no-op" };
       throw new Error("release PR base SHA does not match the triggering Woodpecker commit after branch update");
     }
     detailValue = updatedValue;
@@ -512,7 +558,7 @@ export async function runReleasePrAutoMerge({
     throw new Error("release PR changed file count does not match the release artifact contract");
   }
   const changedFiles = await request(
-    `/repos/${REPOSITORY}/pulls/${candidate.number}/files?per_page=100&page=1`,
+    `${REPOSITORY_API_PATH}/pulls/${candidate.number}/files?per_page=100&page=1`,
   );
   validateChangedFiles(changedFiles, contract.allowedFiles);
 
@@ -525,7 +571,7 @@ export async function runReleasePrAutoMerge({
           filePath,
           decodeFileContent(
             await request(
-              `/repos/${REPOSITORY}/contents/${encodeURIComponent(filePath)}?ref=${encodeURIComponent(candidate.baseSha)}`,
+              `${REPOSITORY_API_PATH}/contents/${encodeURIComponent(filePath)}?ref=${encodeURIComponent(candidate.baseSha)}`,
             ),
             `${filePath}@${candidate.baseSha}`,
           ),
@@ -536,7 +582,7 @@ export async function runReleasePrAutoMerge({
           filePath,
           decodeFileContent(
             await request(
-              `/repos/${REPOSITORY}/contents/${encodeURIComponent(filePath)}?ref=${encodeURIComponent(candidate.headSha)}`,
+              `${REPOSITORY_API_PATH}/contents/${encodeURIComponent(filePath)}?ref=${encodeURIComponent(candidate.headSha)}`,
             ),
             `${filePath}@${candidate.headSha}`,
           ),
@@ -549,8 +595,8 @@ export async function runReleasePrAutoMerge({
 
   let mergeable = false;
   for (let attempt = 1; attempt <= MAX_MERGEABLE_ATTEMPTS; attempt += 1) {
-    const mergeabilityValue = await request(`/repos/${REPOSITORY}/pulls/${candidate.number}`);
-    const mergeabilityCandidate = selectReleaseCandidate([mergeabilityValue]);
+    const mergeabilityValue = await request(`${REPOSITORY_API_PATH}/pulls/${candidate.number}`);
+    const mergeabilityCandidate = selectReleaseCandidate([mergeabilityValue], owner);
     if (!mergeabilityCandidate) throw new Error("release PR disappeared during mergeability validation");
     if (
       mergeabilityCandidate.baseSha !== candidate.baseSha ||
@@ -566,17 +612,18 @@ export async function runReleasePrAutoMerge({
       mergeable = true;
       break;
     }
-    if ((await readMainBranchSha()) !== expectedCommitSha) return { status: "no-op" };
+    if ((await readMainBranchSha(request)) !== expectedCommitSha) return { status: "no-op" };
     if (attempt < MAX_MERGEABLE_ATTEMPTS) await sleep(MERGEABLE_POLL_DELAY_MS);
   }
   if (!mergeable) throw new Error("release PR mergeability check timed out");
 
-  const currentSha = await readMainBranchSha();
+  const currentSha = await readMainBranchSha(request);
   if (currentSha !== expectedCommitSha) return { status: "no-op" };
+  await assertStableRepository();
 
   try {
     const mergeSha = mergeResult(
-      await request(`/repos/${REPOSITORY}/pulls/${candidate.number}/merge`, {
+      await request(`${REPOSITORY_API_PATH}/pulls/${candidate.number}/merge`, {
         method: "PUT",
         body: JSON.stringify({
           sha: candidate.headSha,
@@ -590,16 +637,18 @@ export async function runReleasePrAutoMerge({
     if (!(error instanceof GitHubApiError) || ![405, 409, 422].includes(error.status)) {
       throw error;
     }
-    if ((await readMainBranchSha()) !== expectedCommitSha) return { status: "no-op" };
+    if ((await readMainBranchSha(request)) !== expectedCommitSha) return { status: "no-op" };
     throw error;
   }
 }
 
 async function main() {
-  const result = await runReleasePrAutoMerge({
-    token: process.env.GITHUB_API_TOKEN,
-    commitSha: process.env.CI_COMMIT_SHA,
-  });
+  const options = { token: process.env.GITHUB_API_TOKEN, commitSha: process.env.CI_COMMIT_SHA };
+  if (process.argv[2] === "--repository-url") {
+    console.log(await releaseRepositoryUrl(options));
+    return;
+  }
+  const result = await runReleasePrAutoMerge(options);
   if (result.status === "merged") {
     console.log(`Merged release-please Release PR #${result.pullNumber}.`);
   } else {
