@@ -2,7 +2,7 @@
 
 JurisLM 的 Codex／Cursor Plugin，包含唯一的軟體工程交付 Skill：[`using-jt-harness`](skills/using-jt-harness/SKILL.md)。純文件、內容或非執行媒體 PR 須分別完成內容 audit 或媒體驗收。
 
-官方網站：[JT Harness Plugin](https://jurislm.github.io/jt-harness-plugin/)
+官方網站：[JT Harness Plugin](https://r-seriesx.github.io/jt-harness-plugin/)
 
 ## 安裝
 
@@ -11,7 +11,7 @@ Codex 與 CodeRabbit 是每個 PR 各自獨立的審查條件，僅適用 Skill 
 ### Codex
 
 ```bash
-codex plugin marketplace add https://github.com/jurislm/jt-harness-plugin --ref main
+codex plugin marketplace add https://github.com/r-seriesx/jt-harness-plugin --ref main
 codex plugin add jt-harness-plugin@jurislm-jt-harness
 ```
 
@@ -19,7 +19,7 @@ codex plugin add jt-harness-plugin@jurislm-jt-harness
 
 ### Cursor
 
-在 Cursor 的 Customize → Plugins 選擇 From GitHub Repository，輸入 `https://github.com/jurislm/jt-harness-plugin`，然後安裝 `jt-harness-plugin`。更新後重新載入 Cursor，並確認 `using-jt-harness` Skill 已出現。
+在 Cursor 的 Customize → Plugins 選擇 From GitHub Repository，輸入 `https://github.com/r-seriesx/jt-harness-plugin`，然後安裝 `jt-harness-plugin`。更新後重新載入 Cursor，並確認 `using-jt-harness` Skill 已出現。
 
 ## 範圍
 
